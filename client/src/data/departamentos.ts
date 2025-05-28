@@ -1,0 +1,43 @@
+// Ported from departamentos_colombia.py
+export const DEPARTAMENTOS: Record<string, string[]> = {
+  "Amazonas": ["Leticia", "Puerto Nariño"],
+  "Antioquia": ["Medellín", "Bello", "Itagüí", "Envigado", "Apartadó"],
+  "Atlántico": ["Barranquilla", "Soledad", "Malambo", "Puerto Colombia"],
+  "Bogotá D.C.": ["Bogotá"],
+  "Bolívar": ["Cartagena", "Turbaco", "Magangué", "El Carmen de Bolívar"],
+  "Boyacá": ["Tunja", "Duitama", "Sogamoso", "Chiquinquirá"],
+  "Caldas": ["Manizales", "La Dorada", "Villamaría", "Riosucio"],
+  "Caquetá": ["Florencia", "San Vicente del Caguán"],
+  "Casanare": ["Yopal", "Aguazul", "Villanueva"],
+  "Cauca": ["Popayán", "Santander de Quilichao", "Puerto Tejada"],
+  "Cesar": ["Valledupar", "Aguachica", "La Paz"],
+  "Chocó": ["Quibdó", "Istmina", "Condoto"],
+  "Córdoba": ["Montería", "Lorica", "Cereté"],
+  "Cundinamarca": ["Soacha", "Zipaquirá", "Facatativá", "Girardot"],
+  "Guainía": ["Inírida"],
+  "Guaviare": ["San José del Guaviare"],
+  "Huila": ["Neiva", "Pitalito", "Garzón"],
+  "La Guajira": ["Riohacha", "Maicao", "Fonseca"],
+  "Magdalena": ["Santa Marta", "Ciénaga", "Fundación"],
+  "Meta": ["Villavicencio", "Acacías", "Granada"],
+  "Nariño": ["Pasto", "Ipiales", "Tumaco"],
+  "Norte de Santander": ["Cúcuta", "Ocaña", "Pamplona"],
+  "Putumayo": ["Mocoa", "Puerto Asís"],
+  "Quindío": ["Armenia", "Calarcá", "Montenegro"],
+  "Risaralda": ["Pereira", "Dosquebradas", "La Virginia"],
+  "San Andrés y Providencia": ["San Andrés"],
+  "Santander": ["Bucaramanga", "Floridablanca", "Giron", "Barrancabermeja"],
+  "Sucre": ["Sincelejo", "Corozal"],
+  "Tolima": ["Ibagué", "Espinal", "Honda"],
+  "Valle del Cauca": ["Cali", "Palmira", "Buenaventura", "Tuluá", "Cartago"],
+  "Vaupés": ["Mitú"],
+  "Vichada": ["Puerto Carreño"]
+};
+
+export const getDepartamentos = (): string[] => {
+  return Object.keys(DEPARTAMENTOS);
+};
+
+export const getCiudadesByDepartamento = (departamento: string): string[] => {
+  return DEPARTAMENTOS[departamento] || [];
+};
