@@ -9,15 +9,15 @@ interface VeedoresProps {
 const veedores = [
   {
     id: 1,
-    name: "María González",
-    position: "Veedora Nacional",
-    region: "Coordinadora nacional de veeduría y supervisión general del sistema",
-    email: "maria.gonzalez@veeduria.gov.co",
-    phone: "+57 300 987 6543"
+    name: "Dimas Andrés Arias Núnez",
+    position: "Veedor Nacional",
+    region: "Quindío",
+    email: "dimasveedurianacional@gmail.com",
+    phone: "3146761550"
   },
   {
     id: 2,
-    name: "Juan Pérez",
+    name: "Manuel Andrés Viloria",
     position: "Veedor Regional Antioquia",
     region: "Responsable de supervisar los servicios de salud en la región de Antioquia",
     email: "juan.perez@veeduria.gov.co",
@@ -25,7 +25,7 @@ const veedores = [
   },
   {
     id: 3,
-    name: "Carlos Rodríguez",
+    name: "Jorge Acosta",
     position: "Veedor Regional Valle del Cauca",
     region: "Supervisión y control de servicios de salud en Valle del Cauca",
     email: "carlos.rodriguez@veeduria.gov.co",

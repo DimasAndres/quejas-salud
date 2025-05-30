@@ -14,10 +14,10 @@ export function Welcome({ onLogin, onRegister, onShowVeedores }: WelcomeProps) {
       {/* Hero Section */}
       <div className="text-center bg-gradient-to-r from-primary to-primary/90 rounded-2xl p-8 text-white">
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl font-bold mb-4">Sistema Nacional de Quejas de Salud</h2>
+          <h2 className="text-3xl font-bold mb-4">Sistema de Quejas de la Veeduría Nacional por el Derecho a la Salud</h2>
           <p className="text-lg mb-6 opacity-90">
             Presenta tus quejas y reclamos sobre servicios de salud de manera fácil y segura. 
-            Tu voz es importante para mejorar el sistema de salud en Colombia.
+            Tu voz es importante para luchar por el sistema de salud del magisterio.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
