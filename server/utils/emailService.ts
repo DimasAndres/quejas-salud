@@ -80,7 +80,7 @@ export async function sendComplaintEmail(
     const authorityEmailBody = `
 NUEVA QUEJA DE SALUD
 -----------------------------
-La Veeduría Nacional por el Derecho a la Salud del Magisterio, envía a solicitud de ${user.nombre} ${user.apellido}, identificado con cédula ${user.cedula}, la siguiente queja de salud:
+La Veeduría Nacional por el Derecho a la Salud del Magisterio envía, a solicitud de ${user.nombre} ${user.apellido}, identificado con cédula ${user.cedula}, la siguiente queja de salud:
 
 Nombre: ${user.nombre} ${user.apellido}
 Cédula: ${user.cedula}
