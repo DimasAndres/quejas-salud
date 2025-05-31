@@ -8,23 +8,20 @@ export const TIPOS_QUEJA = [
   "No respuesta a PQR",
   "Problemas con facturación",
   "Inconformidad con el diagnóstico",
-  "Otro"
+  "otros",
+  "Otro",
 ];
 
 export const TIPOS_PRIMARIA = [
   "Consulta médica general",
   "Odontología básica",
-  "Vacunación"
+  "Vacunación",
 ];
 
 export const TIPOS_COMPLEMENTARIA = [
   "Consulta con especialistas",
   "Cirugías programadas",
-  "Terapias (Fisioterapia, psicología)"
+  "Terapias (Fisioterapia, psicología)",
 ];
 
-export const TIPOS_USUARIO = [
-  "docente",
-  "pensionado", 
-  "beneficiario"
-];
+export const TIPOS_USUARIO = ["docente", "pensionado", "beneficiario"];

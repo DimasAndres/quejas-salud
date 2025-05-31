@@ -1,3 +1,4 @@
+modules = ["nodejs-20"]
 [workflows]
 runButton = "Desarrollo Full Stack"
 
@@ -13,3 +14,6 @@ args = "cd server && npm run dev"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd client && npm run dev"
+
+[nix]
+channel = "stable-24_05"

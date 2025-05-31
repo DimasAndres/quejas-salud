@@ -1,251 +1,320 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowLeft, ClipboardList, AlertTriangle, MapPin, FileText, Paperclip, CloudUpload, X, File, Send, Info } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { TIPOS_QUEJA } from "@/data/tiposQueja";
-import { DEPARTAMENTOS, getDepartamentos, getCiudadesByDepartamento } from "@/data/departamentos";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { useToast } from "../hooks/use-toast";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Checkbox } from "../components/ui/checkbox";
+import { Alert, AlertDescription } from "../components/ui/alert";
+import { DEPARTAMENTOS } from "../data/departamentos";
+import { TIPOS_PRIMARIA, TIPOS_COMPLEMENTARIA, TIPOS_USUARIO } from "../data/tiposQueja";
+import { CATEGORIAS_QUEJAS } from "../data/categoriasQuejas";
+import { FileUploader } from "../components/file-uploader";
+import { 
+  User, 
+  Building2, 
+  MapPin, 
+  FileText, 
+  Paperclip, 
+  Send, 
+  Info, 
+  CloudUpload, 
+  File, 
+  X 
+} from "lucide-react";
+import { api } from "../lib/api";
 
-interface ComplaintFormProps {
-  onSubmit: (data: any, files?: FileList) => Promise<void>;
-  onBack: () => void;
-  isLoading: boolean;
-}
-
-export function ComplaintForm({ onSubmit, onBack, isLoading }: ComplaintFormProps) {
+export function ComplaintForm() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedCategoria, setSelectedCategoria] = useState<string>("");
+  const [subcategorias, setSubcategorias] = useState<{id: string, nombre: string}[]>([]);
+  
   const [formData, setFormData] = useState({
-    clasificacion: "",
-    problema: "",
+    tipoServicio: "Consulta médica general",
+    tipoQueja: "",
+    categoria: "",
+    subcategoria: "",
+    entidad: "",
     departamento: "",
     ciudad: "",
     detalle: "",
     paraBeneficiario: false,
   });
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [ciudades, setCiudades] = useState<string[]>([]);
-  const { toast } = useToast();
+
+  // Actualizar subcategorías cuando cambia la categoría seleccionada
+  useEffect(() => {
+    if (selectedCategoria) {
+      const categoriaSeleccionada = CATEGORIAS_QUEJAS.find(cat => cat.id === selectedCategoria);
+      if (categoriaSeleccionada) {
+        setSubcategorias(categoriaSeleccionada.subcategorias);
+        setFormData(prev => ({
+          ...prev,
+          categoria: categoriaSeleccionada.nombre,
+          subcategoria: "" // Resetear subcategoría cuando cambia la categoría
+        }));
+      }
+    } else {
+      setSubcategorias([]);
+    }
+  }, [selectedCategoria]);
 
   const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Handle department change to update cities
-    if (field === "departamento") {
-      const newCiudades = getCiudadesByDepartamento(value);
-      setCiudades(newCiudades);
-      setFormData(prev => ({ ...prev, ciudad: "" })); // Reset city selection
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    
-    // Validate file size (5MB max)
-    const invalidFiles = files.filter(file => file.size > 5 * 1024 * 1024);
-    if (invalidFiles.length > 0) {
-      toast({
-        title: "Archivos muy grandes",
-        description: "Algunos archivos exceden el límite de 5MB",
-        variant: "destructive",
-      });
-      return;
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const filesArray = Array.from(event.target.files);
+      setSelectedFiles((prev) => [...prev, ...filesArray]);
     }
-
-    setSelectedFiles(prev => [...prev, ...files]);
   };
 
   const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate required fields
-    const requiredFields = ['clasificacion', 'problema', 'departamento', 'ciudad', 'detalle'];
-    const emptyFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
-    
-    if (emptyFields.length > 0) {
+    if (!formData.subcategoria) {
       toast({
-        title: "Error",
-        description: "Por favor completa todos los campos obligatorios",
+        title: "Error en el formulario",
+        description: "Por favor selecciona una subcategoría de queja",
         variant: "destructive",
       });
       return;
     }
-
+    
+    setIsLoading(true);
+    
     try {
-      const fileList = selectedFiles.length > 0 ? (() => {
-        const dt = new DataTransfer();
-        selectedFiles.forEach(file => dt.items.add(file));
-        return dt.files;
-      })() : undefined;
-
-      await onSubmit(formData, fileList);
-    } catch (error: any) {
+      // Simulación de envío (reemplazar con API real)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       toast({
-        title: "Error al registrar queja",
-        description: error.message || "Ocurrió un error inesperado",
+        title: "Queja registrada con éxito",
+        description: "Tu queja ha sido enviada y será atendida a la brevedad.",
+      });
+      
+      navigate("/my-complaints");
+    } catch (error) {
+      toast({
+        title: "Error al registrar la queja",
+        description: "Por favor intenta nuevamente más tarde.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <Card className="shadow-xl">
-        <CardContent className="p-8">
-          <div className="flex items-center mb-8">
-            <Button variant="ghost" onClick={onBack} className="mr-4">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h2 className="text-2xl font-bold">Nueva Queja de Salud</h2>
-              <p className="text-muted-foreground mt-2">Completa el formulario para registrar tu queja</p>
-            </div>
-          </div>
-
+    <div className="container max-w-4xl py-8">
+      <Card className="border-2">
+        <CardHeader className="bg-muted/50">
+          <CardTitle className="text-2xl flex items-center">
+            <FileText className="w-6 h-6 mr-3 text-primary" />
+            Formulario de Queja de Salud
+          </CardTitle>
+          <CardDescription>
+            Completa el siguiente formulario para registrar tu queja sobre servicios de salud
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-8">
-            
-            {/* Clasificación de Atención */}
+            {/* Información Personal */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold flex items-center">
-                <ClipboardList className="w-5 h-5 mr-3 text-primary" />
-                Clasificación de Atención
+                <User className="w-5 h-5 mr-3 text-primary" />
+                Información Personal
               </h3>
               
-              <div className="grid md:grid-cols-2 gap-4">
-                <div 
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                    formData.clasificacion === "primaria" 
-                      ? "border-primary bg-primary/5" 
-                      : "border-gray-200 hover:border-primary"
-                  }`}
-                  onClick={() => handleInputChange("clasificacion", "primaria")}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-4 h-4 border-2 rounded-full ${
-                      formData.clasificacion === "primaria" 
-                        ? "border-primary bg-primary" 
-                        : "border-gray-300"
-                    }`} />
-                    <div>
-                      <p className="font-medium">Atención Primaria</p>
-                      <p className="text-sm text-muted-foreground">Consulta general, odontología, vacunación</p>
-                    </div>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nombre">Nombre Completo</Label>
+                  <Input 
+                    id="nombre" 
+                    value={user?.name || ""} 
+                    disabled 
+                    className="bg-muted/50"
+                  />
                 </div>
-                
-                <div 
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
-                    formData.clasificacion === "complementaria" 
-                      ? "border-primary bg-primary/5" 
-                      : "border-gray-200 hover:border-primary"
-                  }`}
-                  onClick={() => handleInputChange("clasificacion", "complementaria")}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-4 h-4 border-2 rounded-full ${
-                      formData.clasificacion === "complementaria" 
-                        ? "border-primary bg-primary" 
-                        : "border-gray-300"
-                    }`} />
-                    <div>
-                      <p className="font-medium">Atención Complementaria</p>
-                      <p className="text-sm text-muted-foreground">Especialistas, cirugías, terapias</p>
-                    </div>
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="documento">Documento de Identidad</Label>
+                  <Input 
+                    id="documento" 
+                    value={user?.document || ""} 
+                    disabled 
+                    className="bg-muted/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Correo Electrónico</Label>
+                  <Input 
+                    id="email" 
+                    value={user?.email || ""} 
+                    disabled 
+                    className="bg-muted/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tipoUsuario">Tipo de Usuario</Label>
+                  <Select 
+                    value={user?.userType || "docente"} 
+                    disabled
+                  >
+                    <SelectTrigger className="bg-muted/50">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIPOS_USUARIO.map((tipo) => (
+                        <SelectItem key={tipo} value={tipo}>
+                          {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
-
-            {/* Tipo de Problema */}
+            
+            {/* Información de la Queja */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold flex items-center">
-                <AlertTriangle className="w-5 h-5 mr-3 text-warning" />
-                Tipo de Problema
+                <Building2 className="w-5 h-5 mr-3 text-primary" />
+                Información de la Queja
               </h3>
               
-              <Select onValueChange={(value) => handleInputChange("problema", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona el tipo de problema" />
-                </SelectTrigger>
-                <SelectContent>
-                  {TIPOS_QUEJA.map((tipo) => (
-                    <SelectItem key={tipo} value={tipo}>
-                      {tipo}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="tipoServicio">Tipo de Servicio</Label>
+                  <Select 
+                    value={formData.tipoServicio} 
+                    onValueChange={(value) => handleInputChange("tipoServicio", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Atención Primaria">Atención Primaria</SelectItem>
+                      <SelectItem value="Atención Complementaria">Atención Complementaria</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="entidad">Entidad de Salud</Label>
+                  <Input 
+                    id="entidad" 
+                    placeholder="Nombre de la IPS o EPS" 
+                    value={formData.entidad}
+                    onChange={(e) => handleInputChange("entidad", e.target.value)}
+                    required
+                  />
+                </div>
+                
+                {/* Categoría de Queja */}
+                <div className="space-y-2">
+                  <Label htmlFor="categoria">Categoría de Queja</Label>
+                  <Select 
+                    value={selectedCategoria} 
+                    onValueChange={setSelectedCategoria}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona una categoría" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIAS_QUEJAS.map((categoria) => (
+                        <SelectItem key={categoria.id} value={categoria.id}>
+                          {categoria.nombre}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Subcategoría de Queja */}
+                <div className="space-y-2">
+                  <Label htmlFor="subcategoria">Subcategoría de Queja</Label>
+                  <Select 
+                    value={formData.subcategoria} 
+                    onValueChange={(value) => handleInputChange("subcategoria", value)}
+                    disabled={subcategorias.length === 0}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={subcategorias.length === 0 ? "Selecciona primero una categoría" : "Selecciona una subcategoría"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subcategorias.map((subcategoria) => (
+                        <SelectItem key={subcategoria.id} value={subcategoria.nombre}>
+                          {subcategoria.nombre}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
-
+            
             {/* Ubicación */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold flex items-center">
-                <MapPin className="w-5 h-5 mr-3 text-green-600" />
-                Ubicación del Problema
+                <MapPin className="w-5 h-5 mr-3 text-primary" />
+                Ubicación
               </h3>
               
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="departamento">Departamento</Label>
-                  <Select onValueChange={(value) => handleInputChange("departamento", value)}>
+                  <Select 
+                    value={formData.departamento} 
+                    onValueChange={(value) => handleInputChange("departamento", value)}
+                  >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona departamento" />
+                      <SelectValue placeholder="Selecciona un departamento" />
                     </SelectTrigger>
                     <SelectContent>
-                      {getDepartamentos().map((dept) => (
-                        <SelectItem key={dept} value={dept}>
-                          {dept}
+                      {DEPARTAMENTOS.map((depto) => (
+                        <SelectItem key={depto} value={depto}>
+                          {depto}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div className="space-y-2">
-                  <Label htmlFor="ciudad">Ciudad/Municipio</Label>
-                  <Select 
-                    onValueChange={(value) => handleInputChange("ciudad", value)}
-                    disabled={!formData.departamento}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={
-                        formData.departamento 
-                          ? "Selecciona municipio" 
-                          : "Primero selecciona departamento"
-                      } />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ciudades.map((ciudad) => (
-                        <SelectItem key={ciudad} value={ciudad}>
-                          {ciudad}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="ciudad">Ciudad o Municipio</Label>
+                  <Input 
+                    id="ciudad" 
+                    placeholder="Nombre de la ciudad o municipio" 
+                    value={formData.ciudad}
+                    onChange={(e) => handleInputChange("ciudad", e.target.value)}
+                    required
+                  />
                 </div>
               </div>
             </div>
-
-            {/* Descripción Detallada */}
+            
+            {/* Detalles de la Queja */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold flex items-center">
-                <FileText className="w-5 h-5 mr-3 text-orange-500" />
-                Descripción Detallada
+                <FileText className="w-5 h-5 mr-3 text-primary" />
+                Detalles de la Queja
               </h3>
               
               <div className="space-y-2">
-                <Label htmlFor="detalle">
-                  Describe tu queja de manera detallada y respetuosa
-                </Label>
-                <Textarea
+                <Label htmlFor="detalle">Descripción Detallada</Label>
+                <Textarea 
                   id="detalle"
                   value={formData.detalle}
                   onChange={(e) => handleInputChange("detalle", e.target.value)}
@@ -260,7 +329,6 @@ export function ComplaintForm({ onSubmit, onBack, isLoading }: ComplaintFormProp
                 </p>
               </div>
             </div>
-
             {/* Archivos de Soporte */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold flex items-center">
@@ -315,7 +383,6 @@ export function ComplaintForm({ onSubmit, onBack, isLoading }: ComplaintFormProp
                 </div>
               )}
             </div>
-
             {/* Para Beneficiario */}
             <Alert className="border-blue-200 bg-blue-50">
               <AlertDescription>
@@ -336,7 +403,6 @@ export function ComplaintForm({ onSubmit, onBack, isLoading }: ComplaintFormProp
                 </div>
               </AlertDescription>
             </Alert>
-
             {/* Submit Button */}
             <div className="border-t pt-6">
               <Button 
