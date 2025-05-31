@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import type { Queja, User } from "@shared/schema";
+import type { Queja, User } from "../../shared/schema.js";
 
 // Email configuration from attached config.py
 const EMAIL_CONFIG = {
