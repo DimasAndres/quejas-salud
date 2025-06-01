@@ -674,121 +674,20 @@
                     <div id="inicio" class="page active">
                         <h3>Sistema de Quejas de Salud</h3>
                         
-                        <div class="info-box">
-                            <p><strong>Bienvenido al Sistema Oficial</strong></p>
-                            <p>Para acceder al sistema y presentar quejas, debe identificarse como:</p>
-                            <p>• <strong>Docente Activo:</strong> Docente en ejercicio</p>
-                            <p>• <strong>Docente Pensionado:</strong> Docente jubilado</p>
-                            <p>• <strong>Beneficiario:</strong> Familiar o dependiente</p>
-                        </div>
-                        
-                        <button onclick="showPage('login')" class="btn">Ingresar al Sistema</button>
-                        <button onclick="showPage('registro')" class="btn btn-secondary">Registrarse</button>
+                        <button onclick="showPage('queja-directa')" class="btn">Presentar Queja</button>
                         <button onclick="showPage('veedores')" class="btn">Ver Veedores</button>
                         <button onclick="showPage('comunicados')" class="btn">Comunicados Oficiales</button>
-                    </div>
-
-                    <!-- Página de Login -->
-                    <div id="login" class="page">
-                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
-                        <h3>Ingresar al Sistema</h3>
-                        <form onsubmit="loginUsuario(event)">
-                            <div class="form-group">
-                                <label for="loginCedula">Número de Cédula:</label>
-                                <input type="text" id="loginCedula" name="cedula" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="loginClave">Contraseña:</label>
-                                <input type="password" id="loginClave" name="clave" required>
-                            </div>
-                            <button type="submit" class="btn">Ingresar</button>
-                            <div id="loginMessage"></div>
-                        </form>
-                    </div>
-
-                    <!-- Página de Registro -->
-                    <div id="registro" class="page">
-                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
-                        <h3>Registrarse en el Sistema</h3>
-                        <form onsubmit="registrarUsuario(event)">
-                            <div class="form-group">
-                                <label for="regNombre">Nombre:</label>
-                                <input type="text" id="regNombre" name="nombre" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="regApellido">Apellido:</label>
-                                <input type="text" id="regApellido" name="apellido" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="regCedula">Número de Cédula:</label>
-                                <input type="text" id="regCedula" name="cedula" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="regCelular">Número de Celular:</label>
-                                <input type="tel" id="regCelular" name="celular" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="regCorreo">Correo Electrónico:</label>
-                                <input type="email" id="regCorreo" name="correo" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="regTipoUsuario">Tipo de Usuario:</label>
-                                <select id="regTipoUsuario" name="tipoUsuario" required>
-                                    <option value="">Seleccione...</option>
-                                    <option value="docente_activo">Docente Activo</option>
-                                    <option value="docente_pensionado">Docente Pensionado</option>
-                                    <option value="beneficiario">Beneficiario</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="regClave">Contraseña:</label>
-                                <input type="password" id="regClave" name="clave" required minlength="6">
-                            </div>
-                            <div class="form-group">
-                                <label for="regConfirmarClave">Confirmar Contraseña:</label>
-                                <input type="password" id="regConfirmarClave" name="confirmarClave" required minlength="6">
-                            </div>
-                            <div class="form-group">
-                                <label>
-                                    <input type="checkbox" name="aceptoPolitica" required>
-                                    Acepto la política de tratamiento de datos personales
-                                </label>
-                            </div>
-                            <button type="submit" class="btn">Registrarse</button>
-                            <div id="registroMessage"></div>
-                        </form>
-                    </div>
-
-                    <!-- Página del Sistema Autorizado -->
-                    <div id="sistema-autorizado" class="page">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                            <div>
-                                <h3>Sistema de Quejas</h3>
-                                <p id="usuarioInfo" style="color: #666; font-size: 14px;"></p>
-                            </div>
-                            <button onclick="cerrarSesion()" class="btn btn-secondary" style="padding: 8px 15px; font-size: 14px;">Cerrar Sesión</button>
-                        </div>
+                        <button onclick="cerrarApp()" class="btn btn-secondary">Salir</button>
+                        
                         <div class="info-box">
-                            <p><strong>¿Cómo podemos ayudarle?</strong></p>
-                            <p>Seleccione el tipo de atención sobre la cual desea presentar su queja:</p>
-                        </div>
-                        <div style="margin-top: 30px;">
-                            <button onclick="mostrarFormularioQueja('primaria')" class="btn">Atención Primaria</button>
-                            <button onclick="mostrarFormularioQueja('complementaria')" class="btn">Atención Complementaria</button>
-                        </div>
-                        <div style="margin-top: 20px;">
-                            <button onclick="showPage('mis-quejas')" class="btn btn-secondary">Ver Mis Quejas</button>
+                            <p><strong>Bienvenido al Sistema Oficial</strong></p>
+                            <p>• Sistema seguro y confiable</p>
+                            <p>• Atención 24/7 disponible</p>
+                            <p>• Seguimiento de tu caso</p>
                         </div>
                     </div>
 
-                    <!-- Página de Mis Quejas -->
-                    <div id="mis-quejas" class="page">
-                        <button onclick="showPage('sistema-autorizado')" class="back-button">← Volver al Sistema</button>
-                        <h3>Mis Quejas Registradas</h3>
-                        <div id="listadoQuejas">
-                            <!-- Se llenará con JavaScript -->
-                        </div>
-                    </div>
+
 
                     <!-- Página de Presentar Queja -->
                     <div id="queja-directa" class="page">
@@ -980,7 +879,17 @@
                         </div>
                         <div class="form-group">
                             <label for="celular">Teléfono/Celular</label>
-                            <input type="tel" id="celular" name="celular" value="${celular}" readonly style="background-color: #f5f5f5;">
+                            <input type="tel" id="celular" name="celular" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tipoUsuario">Tipo de Usuario *</label>
+                            <select id="tipoUsuario" name="tipoUsuario" required>
+                                <option value="">Seleccione...</option>
+                                <option value="docente_activo">Docente Activo</option>
+                                <option value="docente_pensionado">Docente Pensionado</option>
+                                <option value="beneficiario">Beneficiario</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="problema">Tipo de Problema *</label>
@@ -1012,6 +921,16 @@
                                 <input type="checkbox" name="paraBeneficiario"> 
                                 Esta queja es en representación de un beneficiario
                             </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" name="aceptoPolitica" required> 
+                                Acepto la política de tratamiento de datos personales *
+                            </label>
+                            <small style="color: #666; display: block; margin-top: 5px;">
+                                Al marcar esta casilla, acepta que sus datos personales sean tratados conforme a la Ley 1581 de 2012.
+                            </small>
                         </div>
                         
                         <h5>Archivos Adjuntos (Opcional):</h5>

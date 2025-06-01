@@ -209,10 +209,10 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/quejas' && method === 'POST') {
     try {
       const body = await parseBody(req);
-      const { usuarioId, nombre, cedula, correo, celular, problema, detalle, ciudad, departamento, clasificacion, paraBeneficiario, soporte } = body;
+      const { nombre, cedula, correo, celular, problema, detalle, ciudad, departamento, clasificacion, paraBeneficiario, soporte, tipoUsuario, aceptoPolitica } = body;
       
       // Validar datos requeridos
-      if (!nombre || !cedula || !correo || !problema || !detalle || !ciudad || !departamento || !clasificacion) {
+      if (!nombre || !cedula || !correo || !problema || !detalle || !ciudad || !departamento || !clasificacion || !tipoUsuario || !aceptoPolitica) {
         sendJSON(res, 400, { error: 'Faltan campos requeridos' });
         return;
       }
@@ -222,7 +222,8 @@ const server = http.createServer(async (req, res) => {
         nombre: nombre,
         cedula: cedula,
         correo: correo,
-        celular: celular || 'No proporcionado'
+        celular: celular || 'No proporcionado',
+        tipoUsuario: tipoUsuario
       };
       
       // Validación avanzada de contenido con filtro de lenguaje inapropiado
