@@ -496,7 +496,11 @@
                     `;
                 });
                 
-                // Mostrar en la página de queja-directa o crear nueva sección
+                veedoresHTML += '<div style="text-align: center; margin-top: 20px;">';
+                veedoresHTML += '<button onclick="mostrarSeleccionTipo()" class="btn">Presentar una Queja</button>';
+                veedoresHTML += '</div>';
+                
+                // Mostrar en la página de queja-directa
                 document.getElementById('quejaDirectaContent').innerHTML = veedoresHTML;
                 showPage('queja-directa');
             } catch (error) {
