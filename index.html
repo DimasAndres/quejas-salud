@@ -3,80 +3,482 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Veeduría de Salud</title>
+    <title>Veeduría Nacional de Salud - Sistema de Quejas</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            margin: 0;
             padding: 20px;
-            background-color: #f0f8ff;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
         }
         .container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        h1 {
-            color: #2c5282;
-            margin-bottom: 30px;
-        }
-        .upload-area {
-            border: 3px dashed #3182ce;
-            border-radius: 10px;
-            padding: 60px 20px;
-            margin: 30px 0;
-            background-color: #f7fafc;
-        }
-        .upload-text {
-            color: #2d3748;
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-        .instructions {
-            text-align: left;
-            background: #e6f3ff;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
             padding: 20px;
             border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c5530;
+        }
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .nav button {
+            color: #2c5530;
+            background: white;
+            border: 1px solid #2c5530;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav button:hover, .nav button.active {
+            background-color: #2c5530;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c5530;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .btn {
+            background-color: #2c5530;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #1a3d1e;
+        }
+        .error {
+            color: #d32f2f;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+        }
+        .success {
+            color: #2e7d32;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f5e8;
+            border-radius: 4px;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 20px;
         }
-        .status {
-            padding: 15px;
-            background: #d4edda;
-            color: #155724;
-            border-radius: 5px;
-            margin: 20px 0;
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Sistema de Veeduría de Salud</h1>
-        
-        <div class="status">
-            ✓ Servidor listo para recibir archivos
+        <div class="header">
+            <h1>Veeduría Nacional de Salud</h1>
+            <h2>Sistema de Recepción de Quejas</h2>
         </div>
         
-        <div class="upload-area">
-            <div class="upload-text">
-                <strong>Arrastra tu carpeta completa aquí</strong><br>
-                o usa el panel de archivos de Replit
+        <div class="nav">
+            <button onclick="showPage('inicio')" class="active">Inicio</button>
+            <button onclick="showPage('registro')">Registro</button>
+            <button onclick="showPage('login')">Iniciar Sesión</button>
+            <button onclick="showPage('veedores')">Veedores</button>
+            <button id="dashboardBtn" onclick="showPage('dashboard')" style="display:none;">Panel</button>
+            <button id="logoutBtn" onclick="logout()" style="display:none;">Cerrar Sesión</button>
+        </div>
+        
+        <!-- Página de Inicio -->
+        <div id="inicio" class="page active">
+            <h3>Bienvenido al Sistema de Veeduría de Salud</h3>
+            <p>Este sistema permite a los ciudadanos presentar quejas relacionadas con la atención en salud.</p>
+            <p>Para comenzar, debe registrarse o iniciar sesión si ya tiene una cuenta.</p>
+            
+            <h4>Tipos de atención disponibles:</h4>
+            <ul>
+                <li><strong>Atención Primaria:</strong> Consultas médicas generales, medicina preventiva</li>
+                <li><strong>Atención Complementaria:</strong> Especialidades médicas, procedimientos complejos</li>
+            </ul>
+        </div>
+        
+        <!-- Página de Registro -->
+        <div id="registro" class="page">
+            <h3>Registro de Usuario</h3>
+            <form id="registroForm">
+                <div class="form-group">
+                    <label for="nombre">Nombre *</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellido">Apellido *</label>
+                    <input type="text" id="apellido" name="apellido" required>
+                </div>
+                <div class="form-group">
+                    <label for="cedula">Cédula *</label>
+                    <input type="text" id="cedula" name="cedula" required>
+                </div>
+                <div class="form-group">
+                    <label for="celular">Celular *</label>
+                    <input type="text" id="celular" name="celular" required>
+                </div>
+                <div class="form-group">
+                    <label for="correo">Correo Electrónico *</label>
+                    <input type="email" id="correo" name="correo" required>
+                </div>
+                <div class="form-group">
+                    <label for="tipoUsuario">Tipo de Usuario *</label>
+                    <select id="tipoUsuario" name="tipoUsuario" required>
+                        <option value="">Seleccione...</option>
+                        <option value="docente">Docente</option>
+                        <option value="pensionado">Pensionado</option>
+                        <option value="beneficiario">Beneficiario</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="clave">Contraseña *</label>
+                    <input type="password" id="clave" name="clave" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="aceptoPolitica" name="aceptoPolitica" required>
+                        Acepto la política de tratamiento de datos personales *
+                    </label>
+                </div>
+                <button type="submit" class="btn">Registrarse</button>
+                <div id="registroMessage"></div>
+            </form>
+        </div>
+        
+        <!-- Página de Login -->
+        <div id="login" class="page">
+            <h3>Iniciar Sesión</h3>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginCedula">Cédula *</label>
+                    <input type="text" id="loginCedula" name="cedula" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginClave">Contraseña *</label>
+                    <input type="password" id="loginClave" name="clave" required>
+                </div>
+                <button type="submit" class="btn">Iniciar Sesión</button>
+                <div id="loginMessage"></div>
+            </form>
+        </div>
+        
+        <!-- Página de Veedores -->
+        <div id="veedores" class="page">
+            <h3>Veedores Regionales</h3>
+            <p>Los veedores son responsables de supervisar y garantizar la calidad de los servicios de salud en cada región.</p>
+            
+            <h4>Contacto por Regiones:</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                    <h5>Región Andina</h5>
+                    <p><strong>Departamentos:</strong> Antioquia, Boyacá, Caldas, Cundinamarca, Huila, Norte de Santander, Quindío, Risaralda, Santander, Tolima</p>
+                    <p><strong>Contacto:</strong> veedor.andina@veeduria.gov.co</p>
+                </div>
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                    <h5>Región Caribe</h5>
+                    <p><strong>Departamentos:</strong> Atlántico, Bolívar, Cesar, Córdoba, La Guajira, Magdalena, Sucre, San Andrés y Providencia</p>
+                    <p><strong>Contacto:</strong> veedor.caribe@veeduria.gov.co</p>
+                </div>
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                    <h5>Región Pacífico</h5>
+                    <p><strong>Departamentos:</strong> Cauca, Chocó, Nariño, Valle del Cauca</p>
+                    <p><strong>Contacto:</strong> veedor.pacifico@veeduria.gov.co</p>
+                </div>
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                    <h5>Región Amazonía</h5>
+                    <p><strong>Departamentos:</strong> Amazonas, Caquetá, Guainía, Guaviare, Putumayo, Vaupés</p>
+                    <p><strong>Contacto:</strong> veedor.amazonia@veeduria.gov.co</p>
+                </div>
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                    <h5>Región Orinoquía</h5>
+                    <p><strong>Departamentos:</strong> Arauca, Casanare, Meta, Vichada</p>
+                    <p><strong>Contacto:</strong> veedor.orinoquia@veeduria.gov.co</p>
+                </div>
+                <div style="border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                    <h5>Distrito Capital</h5>
+                    <p><strong>Área:</strong> Bogotá D.C.</p>
+                    <p><strong>Contacto:</strong> veedor.bogota@veeduria.gov.co</p>
+                </div>
             </div>
         </div>
         
-        <div class="instructions">
-            <h3>Instrucciones:</h3>
-            <ol>
-                <li>Abre el panel de archivos en el lado izquierdo</li>
-                <li>Arrastra tu carpeta completa desde tu computadora</li>
-                <li>Confirma el reemplazo de archivos cuando aparezca</li>
-                <li>El sistema se reiniciará automáticamente</li>
-            </ol>
+        <!-- Dashboard del Usuario -->
+        <div id="dashboard" class="page">
+            <h3>Panel de Usuario</h3>
+            <div id="userInfo"></div>
+            
+            <div class="nav">
+                <button onclick="showQuejaForm('primaria')">Queja Atención Primaria</button>
+                <button onclick="showQuejaForm('complementaria')">Queja Atención Complementaria</button>
+                <button onclick="showMisQuejas()">Mis Quejas</button>
+            </div>
+            
+            <div id="dashboardContent"></div>
         </div>
-        
-        <p><strong>Estado:</strong> Esperando archivos de la nueva versión</p>
     </div>
+
+    <script>
+        let currentUser = null;
+        
+        function showPage(pageId) {
+            // Ocultar todas las páginas
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Mostrar la página seleccionada
+            document.getElementById(pageId).classList.add('active');
+            
+            // Actualizar botones de navegación
+            const buttons = document.querySelectorAll('.nav button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        function showDashboard() {
+            showPage('dashboard');
+            document.getElementById('userInfo').innerHTML = 
+                `<div style="background-color: #e8f5e8; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                    <h4>Bienvenido, ${currentUser.nombre} ${currentUser.apellido}</h4>
+                    <p><strong>Tipo de usuario:</strong> ${currentUser.tipoUsuario}</p>
+                    <p><strong>Correo:</strong> ${currentUser.correo}</p>
+                </div>`;
+            
+            // Mostrar botones de usuario autenticado
+            document.getElementById('dashboardBtn').style.display = 'inline-block';
+            document.getElementById('logoutBtn').style.display = 'inline-block';
+        }
+        
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboardBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
+            showPage('inicio');
+        }
+        
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error en la petición:', error);
+                return { error: 'Error de conexión con el servidor' };
+            }
+        }
+        
+        // Manejo del formulario de registro
+        document.getElementById('registroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            data.aceptoPolitica = document.getElementById('aceptoPolitica').checked;
+            
+            const result = await apiRequest('/api/register', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            
+            const messageDiv = document.getElementById('registroMessage');
+            if (result.success) {
+                messageDiv.innerHTML = '<div class="success">Usuario registrado exitosamente. Ahora puede iniciar sesión.</div>';
+                e.target.reset();
+            } else {
+                messageDiv.innerHTML = `<div class="error">${result.error || 'Error al registrar usuario'}</div>`;
+            }
+        });
+        
+        // Manejo del formulario de login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            const result = await apiRequest('/api/login', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            
+            const messageDiv = document.getElementById('loginMessage');
+            if (result.success) {
+                currentUser = result.user;
+                showDashboard();
+                e.target.reset();
+                messageDiv.innerHTML = '';
+            } else {
+                messageDiv.innerHTML = `<div class="error">${result.error || 'Error al iniciar sesión'}</div>`;
+            }
+        });
+        
+        function showQuejaForm(tipo) {
+            const tipoTexto = tipo === 'primaria' ? 'Atención Primaria' : 'Atención Complementaria';
+            document.getElementById('dashboardContent').innerHTML = `
+                <h4>Formulario de Queja - ${tipoTexto}</h4>
+                <form id="quejaForm">
+                    <input type="hidden" name="clasificacion" value="${tipo}">
+                    <div class="form-group">
+                        <label for="problema">Tipo de Problema *</label>
+                        <input type="text" id="problema" name="problema" required 
+                               placeholder="Ej: Demora en consulta, maltrato, negación de servicio">
+                    </div>
+                    <div class="form-group">
+                        <label for="detalle">Descripción Detallada *</label>
+                        <textarea id="detalle" name="detalle" required 
+                                  placeholder="Describa detalladamente su queja incluyendo fecha, lugar y personas involucradas"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="ciudad">Ciudad *</label>
+                        <input type="text" id="ciudad" name="ciudad" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="departamento">Departamento *</label>
+                        <select id="departamento" name="departamento" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Amazonas">Amazonas</option>
+                            <option value="Antioquia">Antioquia</option>
+                            <option value="Arauca">Arauca</option>
+                            <option value="Atlántico">Atlántico</option>
+                            <option value="Bogotá D.C.">Bogotá D.C.</option>
+                            <option value="Bolívar">Bolívar</option>
+                            <option value="Boyacá">Boyacá</option>
+                            <option value="Caldas">Caldas</option>
+                            <option value="Caquetá">Caquetá</option>
+                            <option value="Casanare">Casanare</option>
+                            <option value="Cauca">Cauca</option>
+                            <option value="Cesar">Cesar</option>
+                            <option value="Chocó">Chocó</option>
+                            <option value="Córdoba">Córdoba</option>
+                            <option value="Cundinamarca">Cundinamarca</option>
+                            <option value="Guainía">Guainía</option>
+                            <option value="Guaviare">Guaviare</option>
+                            <option value="Huila">Huila</option>
+                            <option value="La Guajira">La Guajira</option>
+                            <option value="Magdalena">Magdalena</option>
+                            <option value="Meta">Meta</option>
+                            <option value="Nariño">Nariño</option>
+                            <option value="Norte de Santander">Norte de Santander</option>
+                            <option value="Putumayo">Putumayo</option>
+                            <option value="Quindío">Quindío</option>
+                            <option value="Risaralda">Risaralda</option>
+                            <option value="San Andrés y Providencia">San Andrés y Providencia</option>
+                            <option value="Santander">Santander</option>
+                            <option value="Sucre">Sucre</option>
+                            <option value="Tolima">Tolima</option>
+                            <option value="Valle del Cauca">Valle del Cauca</option>
+                            <option value="Vaupés">Vaupés</option>
+                            <option value="Vichada">Vichada</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="paraBeneficiario"> 
+                            Esta queja es para un beneficiario
+                        </label>
+                    </div>
+                    <button type="submit" class="btn">Enviar Queja</button>
+                    <div id="quejaMessage"></div>
+                </form>
+            `;
+            
+            document.getElementById('quejaForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+                data.usuarioId = currentUser.id;
+                data.correo = currentUser.correo;
+                data.paraBeneficiario = document.querySelector('input[name="paraBeneficiario"]').checked;
+                
+                const result = await apiRequest('/api/quejas', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                const messageDiv = document.getElementById('quejaMessage');
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success">Queja registrada exitosamente. Se enviará una notificación al veedor correspondiente.</div>';
+                    e.target.reset();
+                } else {
+                    messageDiv.innerHTML = `<div class="error">${result.error || 'Error al registrar la queja'}</div>`;
+                }
+            });
+        }
+        
+        function showMisQuejas() {
+            if (!currentUser) return;
+            
+            apiRequest(`/api/quejas/${currentUser.id}`).then(quejas => {
+                let html = '<h4>Mis Quejas Registradas</h4>';
+                if (quejas.error) {
+                    html += `<div class="error">${quejas.error}</div>`;
+                } else if (quejas.length === 0) {
+                    html += '<p>No tiene quejas registradas.</p>';
+                } else {
+                    html += '<table>';
+                    html += '<tr><th>Fecha</th><th>Tipo</th><th>Problema</th><th>Departamento</th><th>Estado</th></tr>';
+                    quejas.forEach(queja => {
+                        const fecha = new Date(queja.fechaCreacion).toLocaleDateString('es-CO');
+                        html += `<tr>
+                            <td>${fecha}</td>
+                            <td>${queja.clasificacion}</td>
+                            <td>${queja.problema}</td>
+                            <td>${queja.departamento}</td>
+                            <td>${queja.estado}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                }
+                document.getElementById('dashboardContent').innerHTML = html;
+            });
+        }
+    </script>
 </body>
 </html>
