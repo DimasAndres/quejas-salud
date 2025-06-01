@@ -208,14 +208,21 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/quejas' && method === 'POST') {
     try {
       const body = await parseBody(req);
-      const { usuarioId, problema, detalle, ciudad, departamento, correo, clasificacion, paraBeneficiario } = body;
+      const { nombre, cedula, correo, celular, problema, detalle, ciudad, departamento, clasificacion, paraBeneficiario, soporte } = body;
       
-      // Buscar datos del usuario
-      const usuario = users.find(u => u.id === usuarioId);
-      if (!usuario) {
-        sendJSON(res, 400, { error: 'Usuario no encontrado' });
+      // Validar datos requeridos
+      if (!nombre || !cedula || !correo || !problema || !detalle || !ciudad || !departamento || !clasificacion) {
+        sendJSON(res, 400, { error: 'Faltan campos requeridos' });
         return;
       }
+      
+      // Crear objeto usuario temporal para el envío de correos
+      const usuario = {
+        nombre: nombre,
+        cedula: cedula,
+        correo: correo,
+        celular: celular || 'No proporcionado'
+      };
       
       // Filtro básico de contenido
       const contenidoInapropiado = ['malo', 'horrible', 'pésimo', 'terrible', 'basura'];
@@ -232,14 +239,17 @@ const server = http.createServer(async (req, res) => {
       
       const nuevaQueja = {
         id: nextQuejaId++,
-        usuarioId,
+        nombre,
+        cedula,
+        correo,
+        celular,
         problema,
         detalle,
         ciudad,
         departamento,
-        correo,
         clasificacion,
         paraBeneficiario: paraBeneficiario || false,
+        soporte: soporte || [],
         estado: 'pendiente',
         fechaCreacion: new Date()
       };
