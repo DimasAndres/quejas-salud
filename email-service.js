@@ -278,13 +278,21 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
         errores: []
     };
 
-    // Preparar archivos adjuntos si los hay
+    // Preparar archivos adjuntos si los hay y existen
     let attachments = [];
     if (soporte && soporte.length > 0) {
-        attachments = soporte.map(archivo => ({
-            filename: archivo,
-            path: `./uploads/${archivo}` // Ruta donde se guardan los archivos
-        }));
+        const fs = require('fs');
+        for (const archivo of soporte) {
+            const rutaArchivo = `./uploads/${archivo}`;
+            if (fs.existsSync(rutaArchivo)) {
+                attachments.push({
+                    filename: archivo,
+                    path: rutaArchivo
+                });
+            } else {
+                console.log(`⚠️ Archivo no encontrado: ${archivo}`);
+            }
+        }
     }
 
     // 1. Enviar a destinatarios institucionales
