@@ -16,12 +16,28 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 420px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        }
+        .app-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .main-app {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        @media (max-width: 1024px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                order: -1;
+            }
         }
         .header {
             background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
@@ -255,97 +271,141 @@
             <h2>Sistema de Recepción de Quejas</h2>
         </div>
         
-        <div class="main-content">
-            <!-- Página de Inicio -->
-            <div id="inicio" class="page active">
-                <h3>Sistema de Quejas de Salud</h3>
-                
-                <button onclick="showPage('queja-directa')" class="btn">Presentar Queja</button>
-                <button onclick="showPage('veedores')" class="btn">Ver Veedores</button>
-                <button onclick="showPage('comunicados')" class="btn">Comunicados Oficiales</button>
-                <button onclick="cerrarApp()" class="btn btn-secondary">Salir</button>
-                
-                <div class="info-box">
-                    <p><strong>¿Cómo funciona?</strong></p>
-                    <p>• Presenta quejas sobre servicios de salud</p>
-                    <p>• Seguimiento automático a autoridades</p>
-                    <p>• Proceso rápido y confidencial</p>
-                </div>
-            </div>
-
-            <!-- Página de Presentar Queja -->
-            <div id="queja-directa" class="page">
-                <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
-                <h3>Presentar Queja de Salud</h3>
-                <div id="quejaContent">
-                    <div class="info-box">
-                        <p><strong>Seleccione el tipo de atención para su queja:</strong></p>
-                        <p>• <strong>Atención Primaria:</strong> Consultas generales, odontología básica, vacunación</p>
-                        <p>• <strong>Atención Complementaria:</strong> Especialistas, cirugías, terapias</p>
+        <div class="app-layout">
+            <!-- Columna Izquierda - Información -->
+            <div class="sidebar">
+                <div class="patrocinadores">
+                    <h4>ℹ️ ¿Cómo Funciona?</h4>
+                    
+                    <div class="publicidad">
+                        <h5>📋 PROCESO SIMPLE</h5>
+                        <p>Presenta tu queja en solo 3 pasos: completa el formulario, adjunta documentos y envía</p>
                     </div>
-                    <button onclick="mostrarFormularioQueja('primaria')" class="btn">Atención Primaria</button>
-                    <button onclick="mostrarFormularioQueja('complementaria')" class="btn">Atención Complementaria</button>
-                </div>
-            </div>
-
-            <!-- Página de Veedores -->
-            <div id="veedores" class="page">
-                <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
-                <h3>Lista de Veedores</h3>
-                <div id="veedoresContent" class="veedores-list">
-                    <!-- Se llenará con JavaScript -->
-                </div>
-            </div>
-
-            <!-- Página de Comunicados -->
-            <div id="comunicados" class="page">
-                <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
-                <h3>Comunicados Oficiales</h3>
-                <div class="info-box">
-                    <p><strong>Manténgase informado sobre las últimas actualizaciones de la Veeduría Nacional de Salud</strong></p>
-                </div>
-                <div id="comunicadosContent">
-                    <div class="veedor-item">
-                        <h5>Nueva normativa para servicios de salud primaria</h5>
-                        <p>Se establecen nuevos estándares de atención para garantizar la calidad en los servicios de consulta externa y atención ambulatoria...</p>
-                        <p style="color: #999; font-style: italic;">Publicado el 25 de mayo de 2025</p>
+                    
+                    <div class="publicidad">
+                        <h5>📧 ENVÍO AUTOMÁTICO</h5>
+                        <p>Tu queja se envía automáticamente a las autoridades competentes del departamento</p>
                     </div>
-                    <div class="veedor-item">
-                        <h5>Informe mensual de quejas procesadas</h5>
-                        <p>Durante el mes de abril se procesaron 1,245 quejas ciudadanas, de las cuales el 78% fueron resueltas satisfactoriamente...</p>
-                        <p style="color: #999; font-style: italic;">Publicado el 15 de mayo de 2025</p>
+                    
+                    <div class="publicidad">
+                        <h5>🔒 CONFIDENCIAL</h5>
+                        <p>Tus datos están protegidos y el proceso es completamente confidencial</p>
                     </div>
-                    <div class="veedor-item">
-                        <h5>Campaña de prevención en salud mental</h5>
-                        <p>La Veeduría lanza una nueva campaña de sensibilización sobre la importancia de la atención en salud mental...</p>
-                        <p style="color: #999; font-style: italic;">Publicado el 10 de mayo de 2025</p>
+                    
+                    <div class="publicidad">
+                        <h5>⚡ RESPUESTA RÁPIDA</h5>
+                        <p>Las autoridades tienen 15 días hábiles para responder a tu queja</p>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Sección de Patrocinadores (siempre visible) -->
-        <div class="patrocinadores">
-            <h4>🔷 Servicios de la Veeduría</h4>
-            
-            <div class="publicidad">
-                <h5>🏥 VIGILANCIA HOSPITALARIA</h5>
-                <p>Supervisamos la calidad de atención en hospitales públicos y privados para garantizar sus derechos</p>
+            <!-- Columna Central - Aplicación Principal -->
+            <div class="main-app">
+                <div class="main-content">
+                    <!-- Página de Inicio -->
+                    <div id="inicio" class="page active">
+                        <h3>Sistema de Quejas de Salud</h3>
+                        
+                        <button onclick="showPage('queja-directa')" class="btn">Presentar Queja</button>
+                        <button onclick="showPage('veedores')" class="btn">Ver Veedores</button>
+                        <button onclick="showPage('comunicados')" class="btn">Comunicados Oficiales</button>
+                        <button onclick="cerrarApp()" class="btn btn-secondary">Salir</button>
+                        
+                        <div class="info-box">
+                            <p><strong>Bienvenido al Sistema Oficial</strong></p>
+                            <p>• Sistema seguro y confiable</p>
+                            <p>• Atención 24/7 disponible</p>
+                            <p>• Seguimiento de tu caso</p>
+                        </div>
+                    </div>
+
+                    <!-- Página de Presentar Queja -->
+                    <div id="queja-directa" class="page">
+                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                        <h3>Presentar Queja de Salud</h3>
+                        <div id="quejaContent">
+                            <div class="info-box">
+                                <p><strong>Seleccione el tipo de atención para su queja:</strong></p>
+                                <p>• <strong>Atención Primaria:</strong> Consultas generales, odontología básica, vacunación</p>
+                                <p>• <strong>Atención Complementaria:</strong> Especialistas, cirugías, terapias</p>
+                            </div>
+                            <button onclick="mostrarFormularioQueja('primaria')" class="btn">Atención Primaria</button>
+                            <button onclick="mostrarFormularioQueja('complementaria')" class="btn">Atención Complementaria</button>
+                        </div>
+                    </div>
+
+                    <!-- Página de Veedores -->
+                    <div id="veedores" class="page">
+                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                        <h3>Lista de Veedores</h3>
+                        <div id="veedoresContent" class="veedores-list">
+                            <!-- Se llenará con JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Página de Comunicados -->
+                    <div id="comunicados" class="page">
+                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                        <h3>Comunicados Oficiales</h3>
+                        <div class="info-box">
+                            <p><strong>Manténgase informado sobre las últimas actualizaciones de la Veeduría Nacional de Salud</strong></p>
+                        </div>
+                        <div id="comunicadosContent">
+                            <div class="veedor-item">
+                                <h5>Nueva normativa para servicios de salud primaria</h5>
+                                <p>Se establecen nuevos estándares de atención para garantizar la calidad en los servicios de consulta externa y atención ambulatoria...</p>
+                                <p style="color: #999; font-style: italic;">Publicado el 25 de mayo de 2025</p>
+                            </div>
+                            <div class="veedor-item">
+                                <h5>Informe mensual de quejas procesadas</h5>
+                                <p>Durante el mes de abril se procesaron 1,245 quejas ciudadanas, de las cuales el 78% fueron resueltas satisfactoriamente...</p>
+                                <p style="color: #999; font-style: italic;">Publicado el 15 de mayo de 2025</p>
+                            </div>
+                            <div class="veedor-item">
+                                <h5>Campaña de prevención en salud mental</h5>
+                                <p>La Veeduría lanza una nueva campaña de sensibilización sobre la importancia de la atención en salud mental...</p>
+                                <p style="color: #999; font-style: italic;">Publicado el 10 de mayo de 2025</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="publicidad">
-                <h5>📋 AUDITORÍAS DE CALIDAD</h5>
-                <p>Realizamos evaluaciones periódicas a instituciones de salud en todo el territorio nacional</p>
-            </div>
-            
-            <div class="publicidad">
-                <h5>📞 LÍNEA DE ATENCIÓN 24/7</h5>
-                <p>Atención inmediata para emergencias en servicios de salud. Llame al 123 opción 7</p>
-            </div>
-            
-            <div class="publicidad">
-                <h5>🤝 ALIADOS ESTRATÉGICOS</h5>
-                <p>Trabajamos con Ministerio de Salud, Cruz Roja y OPS/OMS para mejorar la atención</p>
+
+            <!-- Columna Derecha - Servicios y Publicidad -->
+            <div class="sidebar">
+                <div class="patrocinadores">
+                    <h4>🔷 Servicios de la Veeduría</h4>
+                    
+                    <div class="publicidad">
+                        <h5>🏥 VIGILANCIA HOSPITALARIA</h5>
+                        <p>Supervisamos la calidad de atención en hospitales públicos y privados</p>
+                    </div>
+                    
+                    <div class="publicidad">
+                        <h5>📋 AUDITORÍAS DE CALIDAD</h5>
+                        <p>Evaluaciones periódicas a instituciones de salud en todo el territorio</p>
+                    </div>
+                    
+                    <div class="publicidad">
+                        <h5>📞 LÍNEA DE ATENCIÓN 24/7</h5>
+                        <p>Atención inmediata para emergencias. Llame al 123 opción 7</p>
+                    </div>
+                    
+                    <div class="publicidad" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white;">
+                        <h5>🤝 MINISTERIO DE SALUD</h5>
+                        <p>Trabajamos conjuntamente por la salud pública colombiana</p>
+                    </div>
+                    
+                    <div class="publicidad" style="background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: white;">
+                        <h5>🏥 CRUZ ROJA COLOMBIANA</h5>
+                        <p>Apoyo en emergencias y atención humanitaria</p>
+                    </div>
+                    
+                    <div class="publicidad" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white;">
+                        <h5>🌍 OPS/OMS</h5>
+                        <p>Cooperación internacional en salud</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
