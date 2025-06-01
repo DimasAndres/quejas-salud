@@ -176,7 +176,7 @@ let transporter = null;
 
 function configurarTransporter() {
     // Configuración con Gmail SMTP (como en la versión original)
-    transporter = nodemailer.createTransporter({
+    transporter = nodemailer.createTransport({
         host: SMTP_SERVER,
         port: SMTP_PORT,
         secure: false, // true para 465, false para otros puertos
