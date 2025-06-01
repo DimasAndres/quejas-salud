@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 const DESTINATARIOS_POR_DEPARTAMENTO = {
     'Amazonas': {
         principal: 'ingenierodimas@gmail.com',
-        copia: ['secretaria.amazonas@ejemplo.gov.co'],
+        copia: [],
         responsable: 'Secretaría de Salud Amazonas'
     },
     'Antioquia': {
