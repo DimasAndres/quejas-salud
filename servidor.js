@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const bcrypt = require('bcryptjs');
+const { enviarNotificacionQueja } = require('./email-service');
 
 // Almacenamiento en memoria
 let users = [];
@@ -161,6 +162,13 @@ const server = http.createServer(async (req, res) => {
       const body = await parseBody(req);
       const { usuarioId, problema, detalle, ciudad, departamento, correo, clasificacion, paraBeneficiario } = body;
       
+      // Buscar datos del usuario
+      const usuario = users.find(u => u.id === usuarioId);
+      if (!usuario) {
+        sendJSON(res, 400, { error: 'Usuario no encontrado' });
+        return;
+      }
+      
       // Filtro básico de contenido
       const contenidoInapropiado = ['malo', 'horrible', 'pésimo', 'terrible', 'basura'];
       const textoCompleto = `${problema} ${detalle}`.toLowerCase();
@@ -192,7 +200,34 @@ const server = http.createServer(async (req, res) => {
       
       console.log(`📋 Nueva queja registrada: ${problema} - ${departamento} (${clasificacion})`);
       
-      sendJSON(res, 200, { success: true, quejaId: nuevaQueja.id });
+      // Enviar correos automáticamente
+      try {
+        const resultadosCorreo = await enviarNotificacionQueja(nuevaQueja, usuario);
+        
+        let mensajeCorreo = '';
+        if (resultadosCorreo.destinatariosEnviado) {
+          mensajeCorreo += 'Notificación enviada a autoridades de salud. ';
+        }
+        if (resultadosCorreo.usuarioEnviado) {
+          mensajeCorreo += 'Comprobante enviado a su correo. ';
+        }
+        if (resultadosCorreo.errores.length > 0) {
+          console.log('Advertencias en envío de correos:', resultadosCorreo.errores);
+        }
+        
+        sendJSON(res, 200, { 
+          success: true, 
+          quejaId: nuevaQueja.id,
+          mensaje: `Queja registrada exitosamente. ${mensajeCorreo}`.trim()
+        });
+      } catch (emailError) {
+        console.error('Error al enviar correos:', emailError);
+        sendJSON(res, 200, { 
+          success: true, 
+          quejaId: nuevaQueja.id,
+          mensaje: 'Queja registrada exitosamente. Error en envío de notificaciones por correo.'
+        });
+      }
     } catch (error) {
       console.error('Error en queja:', error);
       sendJSON(res, 500, { error: 'Error al registrar queja' });

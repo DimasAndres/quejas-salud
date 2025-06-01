@@ -444,7 +444,8 @@
                 
                 const messageDiv = document.getElementById('quejaMessage');
                 if (result.success) {
-                    messageDiv.innerHTML = '<div class="success">Queja registrada exitosamente. Se enviará una notificación al veedor correspondiente.</div>';
+                    const mensaje = result.mensaje || 'Queja registrada exitosamente';
+                    messageDiv.innerHTML = `<div class="success">${mensaje}</div>`;
                     e.target.reset();
                 } else {
                     messageDiv.innerHTML = `<div class="error">${result.error || 'Error al registrar la queja'}</div>`;
