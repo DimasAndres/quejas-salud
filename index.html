@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Veeduría de Salud</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #2c5282;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            border: 3px dashed #3182ce;
+            border-radius: 10px;
+            padding: 60px 20px;
+            margin: 30px 0;
+            background-color: #f7fafc;
+        }
+        .upload-text {
+            color: #2d3748;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .instructions {
+            text-align: left;
+            background: #e6f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .status {
+            padding: 15px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Veeduría de Salud</h1>
+        
+        <div class="status">
+            ✓ Servidor listo para recibir archivos
+        </div>
+        
+        <div class="upload-area">
+            <div class="upload-text">
+                <strong>Arrastra tu carpeta completa aquí</strong><br>
+                o usa el panel de archivos de Replit
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>Instrucciones:</h3>
+            <ol>
+                <li>Abre el panel de archivos en el lado izquierdo</li>
+                <li>Arrastra tu carpeta completa desde tu computadora</li>
+                <li>Confirma el reemplazo de archivos cuando aparezca</li>
+                <li>El sistema se reiniciará automáticamente</li>
+            </ol>
+        </div>
+        
+        <p><strong>Estado:</strong> Esperando archivos de la nueva versión</p>
+    </div>
+</body>
+</html>
