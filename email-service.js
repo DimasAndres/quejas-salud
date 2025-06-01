@@ -214,19 +214,27 @@ async function enviarNotificacionQueja(quejaData, usuario) {
     const cuerpoDestinatarios = `NUEVA QUEJA DE SALUD
 -------------------
 
+Cordial saludo,
+
+A través de la Veeduría Nacional de Salud me permito hacer conocer mi situación de salud que requiere su atención y pronta respuesta. Como ciudadano(a) en ejercicio de mis derechos constitucionales, solicito respetuosamente su intervención para resolver la siguiente problemática:
+
+DESCRIPCIÓN DE LA SITUACIÓN:
+${detalle}
+
+DATOS DEL CIUDADANO:
 Nombre: ${nombre} ${apellido}
 Cédula: ${cedula}
 Celular: ${celular}
 Correo: ${correo}
-Atención: ${clasificacion}
+Tipo de atención: ${clasificacion}
 Departamento: ${departamento}
 Municipio: ${ciudad}
 Tipo de queja: ${problema}
-Responsable asignado: ${responsable}
 Para beneficiario: ${paraBeneficiario ? 'Sí' : 'No'}
 
-DETALLE:
-${detalle}
+Responsable asignado: ${responsable}
+
+Agradezco de antemano su pronta atención y gestión para resolver esta situación de salud.
 
 ---
 Este correo ha sido generado automáticamente por el sistema de Veeduría Nacional de Salud.
