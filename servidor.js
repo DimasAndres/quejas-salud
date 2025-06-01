@@ -209,7 +209,7 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/quejas' && method === 'POST') {
     try {
       const body = await parseBody(req);
-      const { nombre, cedula, correo, celular, problema, detalle, ciudad, departamento, clasificacion, paraBeneficiario, soporte } = body;
+      const { usuarioId, nombre, cedula, correo, celular, problema, detalle, ciudad, departamento, clasificacion, paraBeneficiario, soporte } = body;
       
       // Validar datos requeridos
       if (!nombre || !cedula || !correo || !problema || !detalle || !ciudad || !departamento || !clasificacion) {
@@ -248,6 +248,7 @@ const server = http.createServer(async (req, res) => {
       
       const nuevaQueja = {
         id: nextQuejaId++,
+        usuarioId: usuarioId || null,
         nombre,
         cedula,
         correo,
