@@ -134,4 +134,4 @@ class ContentFilter {
   }
 }
 
-export const contentFilter = new ContentFilter();
+export const contentFilter = new ContentFilter();onst contentFilter = new ContentFilter();
