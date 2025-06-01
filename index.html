@@ -1015,8 +1015,7 @@
 
             // Configurar envío del formulario
             document.getElementById('quejaForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await enviarQueja(e);
+                await enviarQuejaAutorizada(e);
             });
         }
 
@@ -1313,20 +1312,27 @@
             }
         }
 
-        // Modificar función enviarQueja para incluir usuario
+        // Función para enviar queja con validación de política de datos
         async function enviarQuejaAutorizada(e) {
+            e.preventDefault();
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData);
-            data.paraBeneficiario = document.querySelector('input[name="paraBeneficiario"]').checked;
             
-            // Agregar información del usuario autenticado
-            if (usuarioActual) {
-                data.usuarioId = usuarioActual.id;
-                data.nombre = usuarioActual.nombre;
-                data.cedula = usuarioActual.cedula;
-                data.correo = usuarioActual.correo;
-                data.celular = usuarioActual.celular;
+            // Validar que se haya aceptado la política de datos
+            const aceptoPolitica = document.querySelector('input[name="aceptoPolitica"]').checked;
+            if (!aceptoPolitica) {
+                const messageDiv = document.getElementById('quejaMessage');
+                messageDiv.innerHTML = `
+                    <div class="error">
+                        <strong>Política de Datos Requerida</strong><br>
+                        Debe aceptar la política de tratamiento de datos personales para continuar con el envío de su queja.
+                    </div>
+                `;
+                return;
             }
+            
+            data.aceptoPolitica = aceptoPolitica;
+            data.tipoUsuario = document.querySelector('select[name="tipoUsuario"]').value;
             
             // Validar contenido antes de enviar
             const validacion = validarContenidoQueja(data.problema, data.detalle);
