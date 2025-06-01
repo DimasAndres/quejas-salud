@@ -323,6 +323,56 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Obtener información de veedores
+  if (pathname === '/api/veedores' && method === 'GET') {
+    const veedores = [
+      {
+        nombre: "Dr. Juan Carlos Pérez",
+        cargo: "Veedor Nacional de Salud",
+        departamento: "Nacional",
+        telefono: "+57 1 234 5678",
+        email: "juan.perez@veeduria.gov.co"
+      },
+      {
+        nombre: "Dra. María Elena Rodríguez",
+        cargo: "Veedora Regional Caribe",
+        departamento: "Atlántico, Bolívar, Cesar, Córdoba, La Guajira, Magdalena, Sucre",
+        telefono: "+57 5 987 6543",
+        email: "maria.rodriguez@veeduria.gov.co"
+      },
+      {
+        nombre: "Dr. Carlos Andrés Gómez",
+        cargo: "Veedor Regional Pacífico",
+        departamento: "Chocó, Nariño, Valle del Cauca, Cauca",
+        telefono: "+57 2 456 7890",
+        email: "carlos.gomez@veeduria.gov.co"
+      },
+      {
+        nombre: "Dra. Ana Sofía Martínez",
+        cargo: "Veedora Regional Andina",
+        departamento: "Antioquia, Boyacá, Caldas, Cundinamarca, Huila, Quindío, Risaralda, Santander, Tolima",
+        telefono: "+57 4 321 0987",
+        email: "ana.martinez@veeduria.gov.co"
+      },
+      {
+        nombre: "Dr. Luis Fernando Torres",
+        cargo: "Veedor Regional Oriental",
+        departamento: "Arauca, Casanare, Meta, Norte de Santander, Vichada",
+        telefono: "+57 7 654 3210",
+        email: "luis.torres@veeduria.gov.co"
+      },
+      {
+        nombre: "Dra. Patricia Ramírez",
+        cargo: "Veedora Regional Amazónica",
+        departamento: "Amazonas, Caquetá, Guainía, Guaviare, Putumayo, Vaupés",
+        telefono: "+57 8 789 0123",
+        email: "patricia.ramirez@veeduria.gov.co"
+      }
+    ];
+    sendJSON(res, 200, veedores);
+    return;
+  }
+
   // Servir archivos estáticos
   if (pathname === '/' || pathname === '/index.html') {
     serveFile(res, 'index.html');
