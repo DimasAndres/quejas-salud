@@ -3,8 +3,27 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
 const { enviarNotificacionQueja } = require('./email-service');
 const { revisarQueja, sugerirModificacion } = require('./filtro-quejas');
+
+// Configuración de multer para archivos adjuntos
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    // Usar el nombre original del archivo
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB máximo
+  }
+});
 
 // Almacenamiento en memoria
 let users = [];
@@ -207,9 +226,26 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (pathname === '/api/quejas' && method === 'POST') {
-    try {
-      const body = await parseBody(req);
-      const { nombre, cedula, correo, celular, problema, detalle, ciudad, departamento, clasificacion, soporte, tipoUsuario, aceptoPolitica } = body;
+    // Usar multer para procesar archivos adjuntos
+    upload.array('soporte', 5)(req, res, async (err) => {
+      if (err) {
+        console.error('❌ Error subiendo archivos:', err);
+        sendJSON(res, 400, {
+          error: 'Error subiendo archivos adjuntos'
+        });
+        return;
+      }
+      
+      try {
+        const body = req.body;
+        const archivos = req.files || [];
+        const { nombre, cedula, correo, celular, problema, detalle, ciudad, departamento, clasificacion, tipoUsuario, aceptoPolitica } = body;
+        
+        // Obtener nombres de archivos subidos
+        const nombresArchivos = archivos.map(archivo => archivo.filename);
+        if (nombresArchivos.length > 0) {
+          console.log(`📎 Archivos adjuntos: ${nombresArchivos.join(', ')}`);
+        }
       
       // Validar datos requeridos
       if (!nombre || !cedula || !correo || !problema || !detalle || !ciudad || !departamento || !clasificacion || !tipoUsuario || !aceptoPolitica) {
@@ -263,7 +299,7 @@ const server = http.createServer(async (req, res) => {
         tipoUsuario,
         aceptoPolitica,
         fechaAceptacionPolitica: new Date().toISOString(),
-        soporte: soporte || [],
+        soporte: nombresArchivos,
         estado: 'pendiente',
         fechaCreacion: new Date()
       };
@@ -304,6 +340,7 @@ const server = http.createServer(async (req, res) => {
       console.error('Error en queja:', error);
       sendJSON(res, 500, { error: 'Error al registrar queja' });
     }
+    });
     return;
   }
 
