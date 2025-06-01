@@ -247,19 +247,23 @@ Fecha: ${new Date().toLocaleString('es-CO')}`;
 
 Estimado/a ${nombre} ${apellido},
 
-Le informamos que su queja ha sido registrada exitosamente en nuestro sistema.
-A continuación encontrará el detalle de su registro como comprobante:
+Le informamos que su queja ha sido registrada exitosamente en nuestro sistema y ha sido enviada exitosamente a las siguientes entidades responsables de su departamento:
 
+DESTINATARIOS DE SU QUEJA:
+• ${responsable}
+• Correo principal: ${infoDestinatarios.principal}
+${infoDestinatarios.copia.length > 0 ? infoDestinatarios.copia.map(correo => `• Correo copia: ${correo}`).join('\n') : ''}
+
+DETALLE DE SU REGISTRO:
 Número de Registro: ${id}
 Fecha: ${new Date().toLocaleString('es-CO')}
 Tipo de Atención: ${clasificacion}
 Tipo de Queja: ${problema}
 Ubicación: ${ciudad}, ${departamento}
 
-Su queja será atendida de acuerdo a la clasificación asignada. Es importante que conserve este
-comprobante para cualquier seguimiento o consulta adicional que necesite realizar.
+Su queja será atendida de acuerdo a la clasificación asignada por las entidades mencionadas arriba. Es importante que conserve este comprobante para cualquier seguimiento o consulta adicional que necesite realizar.
 
-Para cualquier consulta relacionada con su caso, puede responder a este correo.
+Para cualquier consulta relacionada con su caso, puede responder a este correo o contactar directamente a las entidades responsables mencionadas.
 
 Atentamente,
 Veeduría Nacional de Salud
