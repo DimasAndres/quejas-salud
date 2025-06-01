@@ -1182,15 +1182,22 @@
                 return;
             }
             
+            // Crear FormData para envío con archivos
+            const submitFormData = new FormData(e.target);
+            submitFormData.set('paraBeneficiario', data.paraBeneficiario);
+            
+            // Agregar archivos adjuntos
             if (archivosAdjuntos.length > 0) {
-                data.soporte = archivosAdjuntos.map(file => file.name);
+                archivosAdjuntos.forEach(file => {
+                    submitFormData.append('soporte', file);
+                });
             }
             
             try {
-                const result = await apiRequest('/api/quejas', {
+                const result = await fetch('/api/quejas', {
                     method: 'POST',
-                    body: JSON.stringify(data)
-                });
+                    body: submitFormData
+                }).then(res => res.json());
                 
                 if (result.success) {
                     const mensaje = result.mensaje || 'Queja registrada exitosamente';
@@ -1386,15 +1393,28 @@
                 return;
             }
             
+            // Crear FormData para envío con archivos
+            const submitFormData = new FormData(e.target);
+            submitFormData.set('aceptoPolitica', aceptoPolitica);
+            submitFormData.set('tipoUsuario', data.tipoUsuario);
+            
+            // Manejar municipio personalizado
+            if (ciudadSelect.value === 'otro' && ciudadOtroInput.value.trim()) {
+                submitFormData.set('ciudad', ciudadOtroInput.value.trim());
+            }
+            
+            // Agregar archivos adjuntos
             if (archivosAdjuntos.length > 0) {
-                data.soporte = archivosAdjuntos.map(file => file.name);
+                archivosAdjuntos.forEach(file => {
+                    submitFormData.append('soporte', file);
+                });
             }
             
             try {
-                const result = await apiRequest('/api/quejas', {
+                const result = await fetch('/api/quejas', {
                     method: 'POST',
-                    body: JSON.stringify(data)
-                });
+                    body: submitFormData
+                }).then(res => res.json());
                 
                 if (result.success) {
                     const mensaje = result.mensaje || 'Queja registrada exitosamente';
