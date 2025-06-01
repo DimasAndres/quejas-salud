@@ -220,6 +220,7 @@ const server = http.createServer(async (req, res) => {
       // Crear objeto usuario temporal para el envío de correos
       const usuario = {
         nombre: nombre,
+        apellido: '', // Agregar apellido vacío ya que el formulario actual no lo tiene
         cedula: cedula,
         correo: correo,
         celular: celular || 'No proporcionado',

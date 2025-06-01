@@ -175,11 +175,12 @@ const SMTP_PORT = 587;
 let transporter = null;
 
 function configurarTransporter() {
-    // Configuración con Gmail SMTP (como en la versión original)
+    // Configuración con Gmail SMTP mejorada
     transporter = nodemailer.createTransport({
+        service: 'gmail',
         host: SMTP_SERVER,
         port: SMTP_PORT,
-        secure: false, // true para 465, false para otros puertos
+        secure: false,
         auth: {
             user: EMAIL_REMETENTE,
             pass: EMAIL_PASSWORD
@@ -198,7 +199,7 @@ function obtenerDestinatarios(departamento) {
 async function enviarNotificacionQueja(quejaData, usuario) {
     configurarTransporter();
     
-    const { problema, detalle, ciudad, departamento, clasificacion, paraBeneficiario, id } = quejaData;
+    const { problema, detalle, ciudad, departamento, clasificacion, paraBeneficiario, id, soporte } = quejaData;
     const { nombre, apellido, cedula, celular, correo } = usuario;
     
     // Obtener destinatarios según el departamento
@@ -278,14 +279,24 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
         errores: []
     };
 
+    // Preparar archivos adjuntos si los hay
+    let attachments = [];
+    if (soporte && soporte.length > 0) {
+        attachments = soporte.map(archivo => ({
+            filename: archivo,
+            path: `./uploads/${archivo}` // Ruta donde se guardan los archivos
+        }));
+    }
+
     // 1. Enviar a destinatarios institucionales
     try {
         await transporter.sendMail({
-            from: EMAIL_REMETENTE,
+            from: `"Veeduría Nacional de Salud" <${EMAIL_REMETENTE}>`,
             to: destinatarios.join(', '),
             replyTo: correo,
-            subject: `Nueva queja de salud - ${problema}`,
-            text: cuerpoDestinatarios
+            subject: `Nueva queja de salud - ${problema} - ${departamento}`,
+            text: cuerpoDestinatarios,
+            attachments: attachments
         });
         
         console.log(`📧 Correo enviado a destinatarios institucionales: ${destinatarios.join(', ')}`);
@@ -299,11 +310,12 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
     if (correo && correo.includes('@')) {
         try {
             await transporter.sendMail({
-                from: EMAIL_REMETENTE,
+                from: `"Veeduría Nacional de Salud" <${EMAIL_REMETENTE}>`,
                 to: correo,
                 replyTo: EMAIL_REMETENTE,
                 subject: `Comprobante de registro de queja - ${problema}`,
-                text: cuerpoUsuario
+                text: cuerpoUsuario,
+                attachments: attachments // También incluir archivos en el comprobante
             });
             
             console.log(`📧 Comprobante enviado al usuario: ${correo}`);
