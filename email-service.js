@@ -165,33 +165,30 @@ const DESTINATARIOS_POR_DEPARTAMENTO = {
     }
 };
 
+// Configuración de correo de la veeduría (basado en config.py original)
+const EMAIL_REMETENTE = "veedurianacionalsaludmagcol@gmail.com";
+const EMAIL_PASSWORD = "jhpxfxlrzzghztqj";
+const SMTP_SERVER = "smtp.gmail.com";
+const SMTP_PORT = 587;
+
 // Configuración del transporter de correo
 let transporter = null;
 
 function configurarTransporter() {
-    if (process.env.SENDGRID_API_KEY) {
-        // Configuración con SendGrid
-        transporter = nodemailer.createTransporter({
-            service: 'SendGrid',
-            auth: {
-                user: 'apikey',
-                pass: process.env.SENDGRID_API_KEY
-            }
-        });
-        console.log('📧 Configurado envío de correos con SendGrid');
-    } else {
-        // Configuración simulada para desarrollo
-        console.log('⚠️ SENDGRID_API_KEY no configurada - simulando envío de correos');
-        transporter = {
-            sendMail: async (options) => {
-                console.log('📧 SIMULANDO ENVÍO DE CORREO:');
-                console.log(`   Para: ${options.to}`);
-                console.log(`   Asunto: ${options.subject}`);
-                console.log(`   Contenido: ${options.text.substring(0, 100)}...`);
-                return { messageId: 'simulated-' + Date.now() };
-            }
-        };
-    }
+    // Configuración con Gmail SMTP (como en la versión original)
+    transporter = nodemailer.createTransporter({
+        host: SMTP_SERVER,
+        port: SMTP_PORT,
+        secure: false, // true para 465, false para otros puertos
+        auth: {
+            user: EMAIL_REMETENTE,
+            pass: EMAIL_PASSWORD
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
+    console.log('📧 Configurado envío de correos con Gmail SMTP desde veeduría');
 }
 
 function obtenerDestinatarios(departamento) {
@@ -272,7 +269,7 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
     // 1. Enviar a destinatarios institucionales
     try {
         await transporter.sendMail({
-            from: 'veedurianacionalsaludmagcol@gmail.com',
+            from: EMAIL_REMETENTE,
             to: destinatarios.join(', '),
             replyTo: correo,
             subject: `Nueva queja de salud - ${problema}`,
@@ -290,9 +287,9 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
     if (correo && correo.includes('@')) {
         try {
             await transporter.sendMail({
-                from: 'veedurianacionalsaludmagcol@gmail.com',
+                from: EMAIL_REMETENTE,
                 to: correo,
-                replyTo: 'veedurianacionalsaludmagcol@gmail.com',
+                replyTo: EMAIL_REMETENTE,
                 subject: `Comprobante de registro de queja - ${problema}`,
                 text: cuerpoUsuario
             });
