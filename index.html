@@ -26,6 +26,9 @@
             gap: 30px;
             margin-top: 20px;
         }
+        .main-layout.full-content {
+            grid-template-columns: 1fr 300px;
+        }
         .content-area {
             background: white;
             border-radius: 12px;
@@ -85,8 +88,24 @@
             font-size: 11px;
             color: #999;
         }
+        .back-button {
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .back-button:hover {
+            background-color: #545b62;
+        }
         @media (max-width: 1024px) {
             .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .main-layout.full-content {
                 grid-template-columns: 1fr;
             }
             .sidebar {
@@ -278,6 +297,7 @@
 
                 <!-- Página de Presentar Queja -->
                 <div id="queja-directa" class="page">
+                    <button onclick="goHome()" class="back-button">← Volver al Inicio</button>
                     <h3>Presentar Queja de Salud</h3>
                     <div id="quejaDirectaContent">
                         <div class="info-box">
@@ -294,6 +314,7 @@
 
                 <!-- Página de Comunicados y Noticias -->
                 <div id="noticias" class="page">
+                    <button onclick="goHome()" class="back-button">← Volver al Inicio</button>
                     <h3>Comunicados Oficiales y Noticias</h3>
                     <div class="info-box">
                         <p><strong>Manténgase informado sobre las últimas actualizaciones de la Veeduría Nacional de Salud</strong></p>
@@ -406,12 +427,27 @@
             // Mostrar la página seleccionada
             document.getElementById(pageId).classList.add('active');
             
-            // Actualizar botones de navegación
-            const buttons = document.querySelectorAll('.nav button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            if (event && event.target) {
-                event.target.classList.add('active');
+            // Si es la página de inicio, mostrar navegación, sino ocultarla
+            const navBar = document.querySelector('.nav');
+            const mainLayout = document.querySelector('.main-layout');
+            
+            if (pageId === 'inicio') {
+                navBar.style.display = 'flex';
+                mainLayout.classList.remove('full-content');
+                // Actualizar botones de navegación
+                const buttons = document.querySelectorAll('.nav button');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                }
+            } else {
+                navBar.style.display = 'none';
+                mainLayout.classList.add('full-content');
             }
+        }
+
+        function goHome() {
+            showPage('inicio');
         }
 
         async function mostrarFormularioQueja(tipo) {
@@ -670,12 +706,16 @@
                     `;
                 });
                 
-                veedoresHTML += '<div style="text-align: center; margin-top: 20px;">';
-                veedoresHTML += '<button onclick="mostrarSeleccionTipo()" class="btn">Presentar una Queja</button>';
-                veedoresHTML += '</div>';
+                // Crear contenido completo con botón de regreso
+                let contenidoCompleto = '<button onclick="goHome()" class="back-button">← Volver al Inicio</button>';
+                contenidoCompleto += '<h3>Veedores de Salud por Región</h3>';
+                contenidoCompleto += veedoresHTML;
+                contenidoCompleto += '<div style="text-align: center; margin-top: 20px;">';
+                contenidoCompleto += '<button onclick="showPage(\'queja-directa\')" class="btn">Presentar una Queja</button>';
+                contenidoCompleto += '</div>';
                 
                 // Mostrar en la página de queja-directa
-                document.getElementById('quejaDirectaContent').innerHTML = veedoresHTML;
+                document.getElementById('quejaDirectaContent').innerHTML = contenidoCompleto;
                 showPage('queja-directa');
             } catch (error) {
                 console.error('Error cargando veedores:', error);
