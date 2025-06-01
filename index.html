@@ -674,16 +674,119 @@
                     <div id="inicio" class="page active">
                         <h3>Sistema de Quejas de Salud</h3>
                         
-                        <button onclick="showPage('queja-directa')" class="btn">Presentar Queja</button>
-                        <button onclick="showPage('veedores')" class="btn">Ver Veedores</button>
-                        <button onclick="showPage('comunicados')" class="btn">Comunicados Oficiales</button>
-                        <button onclick="cerrarApp()" class="btn btn-secondary">Salir</button>
-                        
                         <div class="info-box">
                             <p><strong>Bienvenido al Sistema Oficial</strong></p>
-                            <p>• Sistema seguro y confiable</p>
-                            <p>• Atención 24/7 disponible</p>
-                            <p>• Seguimiento de tu caso</p>
+                            <p>Para acceder al sistema y presentar quejas, debe identificarse como:</p>
+                            <p>• <strong>Docente Activo:</strong> Docente en ejercicio</p>
+                            <p>• <strong>Docente Pensionado:</strong> Docente jubilado</p>
+                            <p>• <strong>Beneficiario:</strong> Familiar o dependiente</p>
+                        </div>
+                        
+                        <button onclick="showPage('login')" class="btn">Ingresar al Sistema</button>
+                        <button onclick="showPage('registro')" class="btn btn-secondary">Registrarse</button>
+                        <button onclick="showPage('veedores')" class="btn">Ver Veedores</button>
+                        <button onclick="showPage('comunicados')" class="btn">Comunicados Oficiales</button>
+                    </div>
+
+                    <!-- Página de Login -->
+                    <div id="login" class="page">
+                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                        <h3>Ingresar al Sistema</h3>
+                        <form onsubmit="loginUsuario(event)">
+                            <div class="form-group">
+                                <label for="loginCedula">Número de Cédula:</label>
+                                <input type="text" id="loginCedula" name="cedula" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loginClave">Contraseña:</label>
+                                <input type="password" id="loginClave" name="clave" required>
+                            </div>
+                            <button type="submit" class="btn">Ingresar</button>
+                            <div id="loginMessage"></div>
+                        </form>
+                    </div>
+
+                    <!-- Página de Registro -->
+                    <div id="registro" class="page">
+                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                        <h3>Registrarse en el Sistema</h3>
+                        <form onsubmit="registrarUsuario(event)">
+                            <div class="form-group">
+                                <label for="regNombre">Nombre:</label>
+                                <input type="text" id="regNombre" name="nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regApellido">Apellido:</label>
+                                <input type="text" id="regApellido" name="apellido" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regCedula">Número de Cédula:</label>
+                                <input type="text" id="regCedula" name="cedula" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regCelular">Número de Celular:</label>
+                                <input type="tel" id="regCelular" name="celular" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regCorreo">Correo Electrónico:</label>
+                                <input type="email" id="regCorreo" name="correo" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regTipoUsuario">Tipo de Usuario:</label>
+                                <select id="regTipoUsuario" name="tipoUsuario" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="docente_activo">Docente Activo</option>
+                                    <option value="docente_pensionado">Docente Pensionado</option>
+                                    <option value="beneficiario">Beneficiario</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="regClave">Contraseña:</label>
+                                <input type="password" id="regClave" name="clave" required minlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label for="regConfirmarClave">Confirmar Contraseña:</label>
+                                <input type="password" id="regConfirmarClave" name="confirmarClave" required minlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" name="aceptoPolitica" required>
+                                    Acepto la política de tratamiento de datos personales
+                                </label>
+                            </div>
+                            <button type="submit" class="btn">Registrarse</button>
+                            <div id="registroMessage"></div>
+                        </form>
+                    </div>
+
+                    <!-- Página del Sistema Autorizado -->
+                    <div id="sistema-autorizado" class="page">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div>
+                                <h3>Sistema de Quejas</h3>
+                                <p id="usuarioInfo" style="color: #666; font-size: 14px;"></p>
+                            </div>
+                            <button onclick="cerrarSesion()" class="btn btn-secondary" style="padding: 8px 15px; font-size: 14px;">Cerrar Sesión</button>
+                        </div>
+                        <div class="info-box">
+                            <p><strong>¿Cómo podemos ayudarle?</strong></p>
+                            <p>Seleccione el tipo de atención sobre la cual desea presentar su queja:</p>
+                        </div>
+                        <div style="margin-top: 30px;">
+                            <button onclick="mostrarFormularioQueja('primaria')" class="btn">Atención Primaria</button>
+                            <button onclick="mostrarFormularioQueja('complementaria')" class="btn">Atención Complementaria</button>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button onclick="showPage('mis-quejas')" class="btn btn-secondary">Ver Mis Quejas</button>
+                        </div>
+                    </div>
+
+                    <!-- Página de Mis Quejas -->
+                    <div id="mis-quejas" class="page">
+                        <button onclick="showPage('sistema-autorizado')" class="back-button">← Volver al Sistema</button>
+                        <h3>Mis Quejas Registradas</h3>
+                        <div id="listadoQuejas">
+                            <!-- Se llenará con JavaScript -->
                         </div>
                     </div>
 
@@ -848,26 +951,36 @@
                     `<option value="${tipoQ}">${tipoQ}</option>`
                 ).join('');
                 
+                const nombreCompleto = usuarioActual ? `${usuarioActual.nombre} ${usuarioActual.apellido}` : '';
+                const cedula = usuarioActual ? usuarioActual.cedula : '';
+                const correo = usuarioActual ? usuarioActual.correo : '';
+                const celular = usuarioActual ? usuarioActual.celular : '';
+                
                 document.getElementById('quejaContent').innerHTML = `
                     <h4>Formulario de Queja - ${tipoTexto}</h4>
-                    <form id="quejaForm">
+                    <form id="quejaForm" onsubmit="enviarQuejaAutorizada(event)">
                         <input type="hidden" name="clasificacion" value="${tipo}">
+                        
+                        <div class="info-box" style="margin-bottom: 20px;">
+                            <p><strong>Datos del Usuario:</strong></p>
+                            <p>Los siguientes campos están precargados con su información de registro:</p>
+                        </div>
                         
                         <div class="form-group">
                             <label for="nombre">Nombre Completo *</label>
-                            <input type="text" id="nombre" name="nombre" required>
+                            <input type="text" id="nombre" name="nombre" value="${nombreCompleto}" readonly style="background-color: #f5f5f5;">
                         </div>
                         <div class="form-group">
                             <label for="cedula">Número de Cédula *</label>
-                            <input type="text" id="cedula" name="cedula" required>
+                            <input type="text" id="cedula" name="cedula" value="${cedula}" readonly style="background-color: #f5f5f5;">
                         </div>
                         <div class="form-group">
                             <label for="correo">Correo Electrónico *</label>
-                            <input type="email" id="correo" name="correo" required>
+                            <input type="email" id="correo" name="correo" value="${correo}" readonly style="background-color: #f5f5f5;">
                         </div>
                         <div class="form-group">
                             <label for="celular">Teléfono/Celular</label>
-                            <input type="tel" id="celular" name="celular">
+                            <input type="tel" id="celular" name="celular" value="${celular}" readonly style="background-color: #f5f5f5;">
                         </div>
                         <div class="form-group">
                             <label for="problema">Tipo de Problema *</label>
@@ -1146,6 +1259,197 @@
                     e.target.reset();
                     archivosAdjuntos = [];
                     updateFileList();
+                } else {
+                    let errorMessage = result.error || 'Error al registrar la queja';
+                    if (result.sugerencia) {
+                        errorMessage += `<br><br><strong>Sugerencia:</strong><br>${result.sugerencia}`;
+                    }
+                    if (result.mensaje) {
+                        errorMessage += `<br><br><em>${result.mensaje}</em>`;
+                    }
+                    messageDiv.innerHTML = `<div class="error">${errorMessage}</div>`;
+                }
+            } catch (error) {
+                console.error('Error enviando queja:', error);
+                messageDiv.innerHTML = `<div class="error">Error de conexión. Intente nuevamente.</div>`;
+            }
+        }
+
+        // Variables globales para sesión de usuario
+        let usuarioActual = null;
+
+        // Función para registrar usuario
+        async function registrarUsuario(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            // Validar confirmación de contraseña
+            if (data.clave !== data.confirmarClave) {
+                document.getElementById('registroMessage').innerHTML = '<div class="error">Las contraseñas no coinciden</div>';
+                return;
+            }
+            
+            // Remover confirmación de contraseña del envío
+            delete data.confirmarClave;
+            
+            try {
+                const result = await apiRequest('/api/register', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                const messageDiv = document.getElementById('registroMessage');
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success">Usuario registrado exitosamente. Puede ingresar al sistema.</div>';
+                    setTimeout(() => {
+                        showPage('login');
+                    }, 2000);
+                } else {
+                    messageDiv.innerHTML = `<div class="error">${result.error || 'Error al registrar usuario'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error registrando usuario:', error);
+                document.getElementById('registroMessage').innerHTML = '<div class="error">Error de conexión. Intente nuevamente.</div>';
+            }
+        }
+
+        // Función para hacer login
+        async function loginUsuario(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const result = await apiRequest('/api/login', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                const messageDiv = document.getElementById('loginMessage');
+                if (result.success) {
+                    usuarioActual = result.usuario;
+                    actualizarInfoUsuario();
+                    showPage('sistema-autorizado');
+                    cargarMisQuejas();
+                } else {
+                    messageDiv.innerHTML = `<div class="error">${result.error || 'Error al iniciar sesión'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error en login:', error);
+                document.getElementById('loginMessage').innerHTML = '<div class="error">Error de conexión. Intente nuevamente.</div>';
+            }
+        }
+
+        // Función para actualizar información del usuario en pantalla
+        function actualizarInfoUsuario() {
+            if (usuarioActual) {
+                const tipoUsuarioLabel = {
+                    'docente_activo': 'Docente Activo',
+                    'docente_pensionado': 'Docente Pensionado',
+                    'beneficiario': 'Beneficiario'
+                };
+                
+                document.getElementById('usuarioInfo').textContent = 
+                    `Bienvenido/a ${usuarioActual.nombre} ${usuarioActual.apellido} - ${tipoUsuarioLabel[usuarioActual.tipoUsuario]}`;
+            }
+        }
+
+        // Función para cargar las quejas del usuario
+        async function cargarMisQuejas() {
+            if (!usuarioActual) return;
+            
+            try {
+                const result = await apiRequest(`/api/quejas/${usuarioActual.id}`);
+                const listadoDiv = document.getElementById('listadoQuejas');
+                
+                if (result.quejas && result.quejas.length > 0) {
+                    let html = '';
+                    result.quejas.forEach(queja => {
+                        const fecha = new Date(queja.fechaCreacion).toLocaleDateString('es-CO');
+                        html += `
+                            <div class="veedor-item">
+                                <h5>Queja #${queja.id} - ${queja.problema}</h5>
+                                <p><strong>Detalle:</strong> ${queja.detalle}</p>
+                                <p><strong>Ciudad:</strong> ${queja.ciudad}, ${queja.departamento}</p>
+                                <p><strong>Clasificación:</strong> ${queja.clasificacion}</p>
+                                <p><strong>Estado:</strong> ${queja.estado}</p>
+                                <p><strong>Fecha:</strong> ${fecha}</p>
+                            </div>
+                        `;
+                    });
+                    listadoDiv.innerHTML = html;
+                } else {
+                    listadoDiv.innerHTML = '<div class="info-box"><p>No ha registrado quejas aún.</p></div>';
+                }
+            } catch (error) {
+                console.error('Error cargando quejas:', error);
+                document.getElementById('listadoQuejas').innerHTML = '<div class="error">Error al cargar las quejas</div>';
+            }
+        }
+
+        // Función para cerrar sesión
+        function cerrarSesion() {
+            if (confirm('¿Está seguro que desea cerrar sesión?')) {
+                usuarioActual = null;
+                showPage('inicio');
+                // Limpiar formularios
+                document.querySelectorAll('form').forEach(form => form.reset());
+                document.querySelectorAll('.error, .success').forEach(msg => msg.remove());
+            }
+        }
+
+        // Modificar función enviarQueja para incluir usuario
+        async function enviarQuejaAutorizada(e) {
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            data.paraBeneficiario = document.querySelector('input[name="paraBeneficiario"]').checked;
+            
+            // Agregar información del usuario autenticado
+            if (usuarioActual) {
+                data.usuarioId = usuarioActual.id;
+                data.nombre = usuarioActual.nombre;
+                data.cedula = usuarioActual.cedula;
+                data.correo = usuarioActual.correo;
+                data.celular = usuarioActual.celular;
+            }
+            
+            // Validar contenido antes de enviar
+            const validacion = validarContenidoQueja(data.problema, data.detalle);
+            const messageDiv = document.getElementById('quejaMessage');
+            
+            if (!validacion.esValido) {
+                const errores = validacion.errores.join('<br>• ');
+                messageDiv.innerHTML = `
+                    <div class="error">
+                        <strong>Contenido no apropiado detectado:</strong><br>
+                        • ${errores}<br><br>
+                        <strong>Sugerencia de mejora:</strong><br>
+                        "${validacion.sugerencia}"<br><br>
+                        <em>Por favor, reformule su mensaje de manera respetuosa y constructiva para una mejor atención a su caso.</em>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (archivosAdjuntos.length > 0) {
+                data.soporte = archivosAdjuntos.map(file => file.name);
+            }
+            
+            try {
+                const result = await apiRequest('/api/quejas', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                if (result.success) {
+                    const mensaje = result.mensaje || 'Queja registrada exitosamente';
+                    messageDiv.innerHTML = `<div class="success">${mensaje}</div>`;
+                    e.target.reset();
+                    archivosAdjuntos = [];
+                    updateFileList();
+                    // Actualizar lista de quejas
+                    cargarMisQuejas();
                 } else {
                     let errorMessage = result.error || 'Error al registrar la queja';
                     if (result.sugerencia) {

@@ -307,7 +307,7 @@ const server = http.createServer(async (req, res) => {
       const userId = parseInt(pathname.split('/')[3]);
       const userQuejas = quejas.filter(q => q.usuarioId === userId);
       
-      sendJSON(res, 200, userQuejas);
+      sendJSON(res, 200, { quejas: userQuejas });
     } catch (error) {
       console.error('Error obteniendo quejas:', error);
       sendJSON(res, 500, { error: 'Error al obtener quejas' });
