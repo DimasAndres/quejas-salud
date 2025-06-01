@@ -915,6 +915,7 @@
                             <select id="ciudad" name="ciudad" required disabled>
                                 <option value="">Primero seleccione departamento</option>
                             </select>
+                            <input type="text" id="ciudadOtro" name="ciudadOtro" placeholder="Escriba el nombre del municipio" style="display: none; margin-top: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
                         </div>
                         <div class="form-group" style="border: 1px solid #ddd; padding: 15px; border-radius: 5px; background: #f9f9f9;">
                             <h5 style="margin: 0 0 10px 0; color: #333;">Política de Tratamiento de Datos Personales</h5>
@@ -987,6 +988,24 @@
                         
                         municipios.forEach(municipio => {
                             ciudadSelect.innerHTML += `<option value="${municipio}">${municipio}</option>`;
+                        });
+                        
+                        // Agregar opción "Otro"
+                        ciudadSelect.innerHTML += `<option value="otro">Otro (especificar)</option>`;
+                        
+                        // Configurar evento para mostrar campo de texto cuando se selecciona "Otro"
+                        ciudadSelect.addEventListener('change', function() {
+                            const ciudadOtroInput = document.getElementById('ciudadOtro');
+                            if (this.value === 'otro') {
+                                ciudadOtroInput.style.display = 'block';
+                                ciudadOtroInput.required = true;
+                                this.required = false;
+                            } else {
+                                ciudadOtroInput.style.display = 'none';
+                                ciudadOtroInput.required = false;
+                                this.required = true;
+                                ciudadOtroInput.value = '';
+                            }
                         });
                     } catch (error) {
                         console.error('Error cargando municipios:', error);
@@ -1340,6 +1359,14 @@
             
             data.aceptoPolitica = aceptoPolitica;
             data.tipoUsuario = document.querySelector('select[name="tipoUsuario"]').value;
+            
+            // Manejar municipio personalizado si se seleccionó "Otro"
+            const ciudadSelect = document.querySelector('select[name="ciudad"]');
+            const ciudadOtroInput = document.querySelector('input[name="ciudadOtro"]');
+            
+            if (ciudadSelect.value === 'otro' && ciudadOtroInput.value.trim()) {
+                data.ciudad = ciudadOtroInput.value.trim();
+            }
             
             // Validar contenido antes de enviar
             const validacion = validarContenidoQueja(data.problema, data.detalle);
