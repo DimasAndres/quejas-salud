@@ -359,63 +359,51 @@
             }
         });
         
-        function showQuejaForm(tipo) {
+        async function showQuejaForm(tipo) {
             const tipoTexto = tipo === 'primaria' ? 'Atención Primaria' : 'Atención Complementaria';
+            
+            // Cargar departamentos y tipos de queja
+            const departamentos = await apiRequest('/api/departamentos');
+            const tiposQueja = await apiRequest(`/api/tipos-queja/${tipo}`);
+            
+            // Generar opciones de departamentos
+            const departamentosOptions = departamentos.map(dep => 
+                `<option value="${dep}">${dep}</option>`
+            ).join('');
+            
+            // Generar opciones de tipos de queja
+            const tiposQuejaOptions = tiposQueja.map(tipoQ => 
+                `<option value="${tipoQ}">${tipoQ}</option>`
+            ).join('');
+            
             document.getElementById('dashboardContent').innerHTML = `
                 <h4>Formulario de Queja - ${tipoTexto}</h4>
                 <form id="quejaForm">
                     <input type="hidden" name="clasificacion" value="${tipo}">
                     <div class="form-group">
                         <label for="problema">Tipo de Problema *</label>
-                        <input type="text" id="problema" name="problema" required 
-                               placeholder="Ej: Demora en consulta, maltrato, negación de servicio">
+                        <select id="problema" name="problema" required>
+                            <option value="">Seleccione el tipo de problema</option>
+                            ${tiposQuejaOptions}
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="detalle">Descripción Detallada *</label>
                         <textarea id="detalle" name="detalle" required 
-                                  placeholder="Describa detalladamente su queja incluyendo fecha, lugar y personas involucradas"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="ciudad">Ciudad *</label>
-                        <input type="text" id="ciudad" name="ciudad" required>
+                                  placeholder="Describa detalladamente su queja incluyendo fecha, lugar y personas involucradas" 
+                                  style="height: 100px; resize: vertical;"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="departamento">Departamento *</label>
                         <select id="departamento" name="departamento" required>
-                            <option value="">Seleccione...</option>
-                            <option value="Amazonas">Amazonas</option>
-                            <option value="Antioquia">Antioquia</option>
-                            <option value="Arauca">Arauca</option>
-                            <option value="Atlántico">Atlántico</option>
-                            <option value="Bogotá D.C.">Bogotá D.C.</option>
-                            <option value="Bolívar">Bolívar</option>
-                            <option value="Boyacá">Boyacá</option>
-                            <option value="Caldas">Caldas</option>
-                            <option value="Caquetá">Caquetá</option>
-                            <option value="Casanare">Casanare</option>
-                            <option value="Cauca">Cauca</option>
-                            <option value="Cesar">Cesar</option>
-                            <option value="Chocó">Chocó</option>
-                            <option value="Córdoba">Córdoba</option>
-                            <option value="Cundinamarca">Cundinamarca</option>
-                            <option value="Guainía">Guainía</option>
-                            <option value="Guaviare">Guaviare</option>
-                            <option value="Huila">Huila</option>
-                            <option value="La Guajira">La Guajira</option>
-                            <option value="Magdalena">Magdalena</option>
-                            <option value="Meta">Meta</option>
-                            <option value="Nariño">Nariño</option>
-                            <option value="Norte de Santander">Norte de Santander</option>
-                            <option value="Putumayo">Putumayo</option>
-                            <option value="Quindío">Quindío</option>
-                            <option value="Risaralda">Risaralda</option>
-                            <option value="San Andrés y Providencia">San Andrés y Providencia</option>
-                            <option value="Santander">Santander</option>
-                            <option value="Sucre">Sucre</option>
-                            <option value="Tolima">Tolima</option>
-                            <option value="Valle del Cauca">Valle del Cauca</option>
-                            <option value="Vaupés">Vaupés</option>
-                            <option value="Vichada">Vichada</option>
+                            <option value="">Seleccione departamento</option>
+                            ${departamentosOptions}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ciudad">Ciudad/Municipio *</label>
+                        <select id="ciudad" name="ciudad" required disabled>
+                            <option value="">Primero seleccione departamento</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -428,6 +416,28 @@
                     <div id="quejaMessage"></div>
                 </form>
             `;
+            
+            // Configurar el evento de cambio de departamento para cargar municipios
+            document.getElementById('departamento').addEventListener('change', async (e) => {
+                const departamento = e.target.value;
+                const ciudadSelect = document.getElementById('ciudad');
+                
+                if (departamento) {
+                    const municipios = await apiRequest(`/api/municipios/${encodeURIComponent(departamento)}`);
+                    
+                    // Limpiar y habilitar el select de ciudades
+                    ciudadSelect.innerHTML = '<option value="">Seleccione municipio</option>';
+                    ciudadSelect.disabled = false;
+                    
+                    // Agregar opciones de municipios
+                    municipios.forEach(municipio => {
+                        ciudadSelect.innerHTML += `<option value="${municipio}">${municipio}</option>`;
+                    });
+                } else {
+                    ciudadSelect.innerHTML = '<option value="">Primero seleccione departamento</option>';
+                    ciudadSelect.disabled = true;
+                }
+            });
             
             document.getElementById('quejaForm').addEventListener('submit', async (e) => {
                 e.preventDefault();

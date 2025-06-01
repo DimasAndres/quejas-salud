@@ -11,6 +11,54 @@ let quejas = [];
 let nextUserId = 1;
 let nextQuejaId = 1;
 
+// Datos de configuración
+const DEPARTAMENTOS = {
+    "Amazonas": ["Leticia", "Puerto Nariño"],
+    "Antioquia": ["Medellín", "Bello", "Itagüí", "Envigado", "Apartadó"],
+    "Atlántico": ["Barranquilla", "Soledad", "Malambo", "Puerto Colombia"],
+    "Bogotá D.C.": ["Bogotá"],
+    "Bolívar": ["Cartagena", "Turbaco", "Magangué", "El Carmen de Bolívar"],
+    "Boyacá": ["Tunja", "Duitama", "Sogamoso", "Chiquinquirá"],
+    "Caldas": ["Manizales", "La Dorada", "Villamaría", "Riosucio"],
+    "Caquetá": ["Florencia", "San Vicente del Caguán"],
+    "Casanare": ["Yopal", "Aguazul", "Villanueva"],
+    "Cauca": ["Popayán", "Santander de Quilichao", "Puerto Tejada"],
+    "Cesar": ["Valledupar", "Aguachica", "La Paz"],
+    "Chocó": ["Quibdó", "Istmina", "Condoto"],
+    "Córdoba": ["Montería", "Lorica", "Cereté"],
+    "Cundinamarca": ["Soacha", "Zipaquirá", "Facatativá", "Girardot"],
+    "Guainía": ["Inírida"],
+    "Guaviare": ["San José del Guaviare"],
+    "Huila": ["Neiva", "Pitalito", "Garzón"],
+    "La Guajira": ["Riohacha", "Maicao", "Fonseca"],
+    "Magdalena": ["Santa Marta", "Ciénaga", "Fundación"],
+    "Meta": ["Villavicencio", "Acacías", "Granada"],
+    "Nariño": ["Pasto", "Ipiales", "Tumaco"],
+    "Norte de Santander": ["Cúcuta", "Ocaña", "Pamplona"],
+    "Putumayo": ["Mocoa", "Puerto Asís"],
+    "Quindío": ["Armenia", "Calarcá", "Montenegro"],
+    "Risaralda": ["Pereira", "Dosquebradas", "La Virginia"],
+    "San Andrés y Providencia": ["San Andrés"],
+    "Santander": ["Bucaramanga", "Floridablanca", "Giron", "Barrancabermeja"],
+    "Sucre": ["Sincelejo", "Corozal"],
+    "Tolima": ["Ibagué", "Espinal", "Honda"],
+    "Valle del Cauca": ["Cali", "Palmira", "Buenaventura", "Tuluá", "Cartago"],
+    "Vaupés": ["Mitú"],
+    "Vichada": ["Puerto Carreño"]
+};
+
+const TIPOS_PRIMARIA = [
+    "Consulta médica general",
+    "Odontología básica",
+    "Vacunación"
+];
+
+const TIPOS_COMPLEMENTARIA = [
+    "Consulta con especialistas",
+    "Cirugías programadas",
+    "Terapias (Fisioterapia, psicología)"
+];
+
 // Función para parsear JSON del cuerpo de la petición
 function parseBody(req) {
   return new Promise((resolve, reject) => {
@@ -245,6 +293,33 @@ const server = http.createServer(async (req, res) => {
       console.error('Error obteniendo quejas:', error);
       sendJSON(res, 500, { error: 'Error al obtener quejas' });
     }
+    return;
+  }
+
+  // Obtener departamentos
+  if (pathname === '/api/departamentos' && method === 'GET') {
+    sendJSON(res, 200, Object.keys(DEPARTAMENTOS));
+    return;
+  }
+
+  // Obtener municipios por departamento
+  if (pathname.startsWith('/api/municipios/') && method === 'GET') {
+    const departamento = decodeURIComponent(pathname.split('/')[3]);
+    const municipios = DEPARTAMENTOS[departamento] || [];
+    sendJSON(res, 200, municipios);
+    return;
+  }
+
+  // Obtener tipos de queja por clasificación
+  if (pathname.startsWith('/api/tipos-queja/') && method === 'GET') {
+    const clasificacion = pathname.split('/')[3];
+    let tipos = [];
+    if (clasificacion === 'primaria') {
+      tipos = TIPOS_PRIMARIA;
+    } else if (clasificacion === 'complementaria') {
+      tipos = TIPOS_COMPLEMENTARIA;
+    }
+    sendJSON(res, 200, tipos);
     return;
   }
 
