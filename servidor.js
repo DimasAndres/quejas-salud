@@ -390,6 +390,13 @@ const server = http.createServer(async (req, res) => {
         departamento: "Amazonas, Caquetá, Guainía, Guaviare, Putumayo, Vaupés",
         telefono: "+57 8 789 0123",
         email: "patricia.ramirez@veeduria.gov.co"
+      },
+      {
+        nombre: "Ing. Dimas",
+        cargo: "Veedor Departamental Amazonas",
+        departamento: "Amazonas",
+        telefono: "+57 8 456 7890",
+        email: "ingenierodimas@gmail.com"
       }
     ];
     sendJSON(res, 200, veedores);
