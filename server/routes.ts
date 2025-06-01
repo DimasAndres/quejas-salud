@@ -1,12 +1,18 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
+import type { Express, Request, Response, NextFunction } from "express";
 import { storage } from "./storage";
-import { insertUserSchema, insertQuejaSchema, loginSchema } from "../shared/schema.js";
+import { insertUserSchema, insertQuejaSchema, loginSchema } from "../shared/schema";
 import bcrypt from "bcrypt";
 import multer from "multer";
 import path from "path";
 import { contentFilter } from "./utils/contentFilter";
 import { sendComplaintEmail } from "./utils/emailService";
+
+// Extend Express Request type to include session
+declare module 'express-session' {
+  interface SessionData {
+    userId?: number;
+  }
+}
 
 const upload = multer({
   dest: "uploads/",
@@ -24,10 +30,10 @@ const upload = multer({
   }
 });
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export function registerRoutes(app: Express): void {
   
   // Authentication middleware
-  const requireAuth = (req: any, res: any, next: any) => {
+  const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     if (!req.session?.userId) {
       return res.status(401).json({ message: "No autorizado" });
     }
@@ -257,6 +263,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
-  return httpServer;
+  // Routes registered successfully
 }
