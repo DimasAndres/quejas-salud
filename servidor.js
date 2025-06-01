@@ -4,6 +4,7 @@ const path = require('path');
 const url = require('url');
 const bcrypt = require('bcryptjs');
 const { enviarNotificacionQueja } = require('./email-service');
+const { revisarQueja, sugerirModificacion } = require('./filtro-quejas');
 
 // Almacenamiento en memoria
 let users = [];
@@ -224,18 +225,26 @@ const server = http.createServer(async (req, res) => {
         celular: celular || 'No proporcionado'
       };
       
-      // Filtro básico de contenido
-      const contenidoInapropiado = ['malo', 'horrible', 'pésimo', 'terrible', 'basura'];
-      const textoCompleto = `${problema} ${detalle}`.toLowerCase();
+      // Validación avanzada de contenido con filtro de lenguaje inapropiado
+      const textoCompleto = `${problema} ${detalle}`;
+      const resultadoFiltro = revisarQueja(textoCompleto);
       
-      for (let palabra of contenidoInapropiado) {
-        if (textoCompleto.includes(palabra)) {
-          sendJSON(res, 400, { 
-            error: 'El contenido de la queja contiene lenguaje inapropiado. Por favor, reformule su mensaje de manera respetuosa.' 
-          });
-          return;
-        }
+      if (!resultadoFiltro.esApropiada) {
+        const sugerencia = sugerirModificacion(textoCompleto);
+        const razones = resultadoFiltro.palabrasEncontradas.join(', ');
+        
+        console.log(`🚫 Queja rechazada por contenido inapropiado. Razones: ${razones}`);
+        
+        sendJSON(res, 400, { 
+          error: 'El contenido de la queja contiene lenguaje inapropiado para comunicaciones oficiales.',
+          detalles: `Problemas detectados: ${razones}`,
+          sugerencia: sugerencia,
+          mensaje: 'Por favor, reformule su mensaje de manera respetuosa y constructiva. Una comunicación adecuada nos ayuda a brindar mejor atención a su caso.'
+        });
+        return;
       }
+      
+      console.log(`✅ Contenido validado exitosamente`);
       
       const nuevaQueja = {
         id: nextQuejaId++,

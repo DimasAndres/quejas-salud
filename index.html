@@ -1039,10 +1039,96 @@
             updateFileList();
         }
 
+        // Sistema de filtros de contenido inapropiado
+        function validarContenidoQueja(problema, detalle) {
+            const palabrasOfensivas = [
+                "idiota", "estúpido", "estupido", "imbécil", "imbecil", "tonto",
+                "inútil", "inutil", "incompetente", "basura", "maldito", "maldita",
+                "pendejo", "pendeja", "hijo de", "hijode", "marica", "maricas", "maricón", "maricon",
+                "puta", "puto", "putita", "putilla", "cabron", "cabrón", "gonorrea", "gonorreita",
+                "carajo", "culo", "culero", "culera", "mierda", "jodido", "jodida",
+                "inepto", "inepta", "ineptos", "ineptas", "vieja", "viejo", "viejas", "viejos",
+                "chismosa", "chismoso", "mediquillos", "mediquillo", "mediquilla", "mediquetes",
+                "perro", "perra", "animal", "bestia", "bruto", "bruta", "burro", "burra",
+                "malo", "mala", "malos", "malas", "porquería", "porqueria", "lacra", "rastrero",
+                "asqueroso", "asquerosa", "maltratador", "maltratadora", "doctorcito", "doctorcitos",
+                "medicastro", "medicastros", "matasanos", "matasano", "charlatán", "charlatana"
+            ];
+            
+            const expresionesProblematicas = [
+                /\b(vieja|viejo)\b.*?\b(médica|médico|enfermera|enfermero|doctor|doctora)\b/gi,
+                /\b(no sabe|no saben)\b.*?\b(nada|hacer|trabajar|atender)\b/gi,
+                /\b(título|títulos)\b.*?\b(regalado|regalados|comprado|comprados)\b/gi,
+                /\b(tratan|trataron).*?\b(como)\b.*?\b(perro|perros|animal|animales)\b/gi,
+                /\besa\s+(vieja|viejo)\b/gi
+            ];
+            
+            const textoCompleto = `${problema} ${detalle}`.toLowerCase();
+            const erroresEncontrados = [];
+            let sugerencia = `${problema} ${detalle}`;
+            
+            // Verificar palabras ofensivas
+            for (const palabra of palabrasOfensivas) {
+                const regex = new RegExp(`\\b${palabra.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+                if (regex.test(textoCompleto)) {
+                    erroresEncontrados.push(`Lenguaje inapropiado: "${palabra}"`);
+                    sugerencia = sugerencia.replace(regex, '[término apropiado]');
+                }
+            }
+            
+            // Verificar expresiones problemáticas
+            for (const expresion of expresionesProblematicas) {
+                if (expresion.test(textoCompleto)) {
+                    erroresEncontrados.push('Expresión despectiva hacia profesionales de salud');
+                    sugerencia = sugerencia.replace(expresion, '[expresión respetuosa]');
+                }
+            }
+            
+            // Casos específicos de mejora
+            if (textoCompleto.includes('esa vieja') && textoCompleto.includes('médica')) {
+                erroresEncontrados.push('Expresión despectiva por edad y género');
+                sugerencia = 'Me siento insatisfecho con la atención recibida por parte de la profesional médica.';
+            }
+            
+            if (textoCompleto.includes('mediquillos') || textoCompleto.includes('mediquillo')) {
+                erroresEncontrados.push('Término despectivo hacia profesionales médicos');
+                sugerencia = 'No estoy satisfecho con el trato recibido por parte del personal médico.';
+            }
+            
+            if (textoCompleto.includes('como a perro') || textoCompleto.includes('como perro')) {
+                erroresEncontrados.push('Comparación despectiva sobre trato recibido');
+                sugerencia = 'Considero que el trato recibido careció de calidez humana.';
+            }
+            
+            return {
+                esValido: erroresEncontrados.length === 0,
+                errores: erroresEncontrados,
+                sugerencia: sugerencia
+            };
+        }
+
         async function enviarQueja(e) {
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData);
             data.paraBeneficiario = document.querySelector('input[name="paraBeneficiario"]').checked;
+            
+            // Validar contenido antes de enviar
+            const validacion = validarContenidoQueja(data.problema, data.detalle);
+            const messageDiv = document.getElementById('quejaMessage');
+            
+            if (!validacion.esValido) {
+                const errores = validacion.errores.join('<br>• ');
+                messageDiv.innerHTML = `
+                    <div class="error">
+                        <strong>Contenido no apropiado detectado:</strong><br>
+                        • ${errores}<br><br>
+                        <strong>Sugerencia de mejora:</strong><br>
+                        "${validacion.sugerencia}"<br><br>
+                        <em>Por favor, reformule su mensaje de manera respetuosa y constructiva para una mejor atención a su caso.</em>
+                    </div>
+                `;
+                return;
+            }
             
             if (archivosAdjuntos.length > 0) {
                 data.soporte = archivosAdjuntos.map(file => file.name);
@@ -1054,7 +1140,6 @@
                     body: JSON.stringify(data)
                 });
                 
-                const messageDiv = document.getElementById('quejaMessage');
                 if (result.success) {
                     const mensaje = result.mensaje || 'Queja registrada exitosamente';
                     messageDiv.innerHTML = `<div class="success">${mensaje}</div>`;
@@ -1062,11 +1147,18 @@
                     archivosAdjuntos = [];
                     updateFileList();
                 } else {
-                    messageDiv.innerHTML = `<div class="error">${result.error || 'Error al registrar la queja'}</div>`;
+                    let errorMessage = result.error || 'Error al registrar la queja';
+                    if (result.sugerencia) {
+                        errorMessage += `<br><br><strong>Sugerencia:</strong><br>${result.sugerencia}`;
+                    }
+                    if (result.mensaje) {
+                        errorMessage += `<br><br><em>${result.mensaje}</em>`;
+                    }
+                    messageDiv.innerHTML = `<div class="error">${errorMessage}</div>`;
                 }
             } catch (error) {
                 console.error('Error enviando queja:', error);
-                document.getElementById('quejaMessage').innerHTML = `<div class="error">Error de conexión. Intente nuevamente.</div>`;
+                messageDiv.innerHTML = `<div class="error">Error de conexión. Intente nuevamente.</div>`;
             }
         }
 
