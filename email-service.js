@@ -320,7 +320,8 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
             to: destinatarios.join(", "),
             replyTo: correo,
             subject: `Nueva queja de salud - ${problema}`,
-            text: cuerpoDestinatarios + (soporte && soporte.length > 0 ? `\n\nARCHIVOS MENCIONADOS:\n${soporte.map(archivo => `- ${archivo}`).join('\n')}` : ''),
+            text: cuerpoDestinatarios,
+            attachments: attachments,
         });
 
         console.log(
@@ -344,7 +345,8 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
                 to: correo,
                 replyTo: EMAIL_REMETENTE,
                 subject: `Comprobante de registro de queja - ${problema}`,
-                text: cuerpoUsuario + (soporte && soporte.length > 0 ? `\n\nARCHIVOS MENCIONADOS:\n${soporte.map(archivo => `- ${archivo}`).join('\n')}` : '')
+                text: cuerpoUsuario,
+                attachments: attachments
             });
 
             console.log(`📧 Comprobante enviado al usuario: ${correo}`);
