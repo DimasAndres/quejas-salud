@@ -175,12 +175,11 @@ const SMTP_PORT = 587;
 let transporter = null;
 
 function configurarTransporter() {
-    // Configuración con Gmail SMTP mejorada
+    // Configuración con Gmail SMTP (como en la versión original)
     transporter = nodemailer.createTransport({
-        service: 'gmail',
         host: SMTP_SERVER,
         port: SMTP_PORT,
-        secure: false,
+        secure: false, // true para 465, false para otros puertos
         auth: {
             user: EMAIL_REMETENTE,
             pass: EMAIL_PASSWORD
@@ -291,10 +290,10 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
     // 1. Enviar a destinatarios institucionales
     try {
         await transporter.sendMail({
-            from: `"Veeduría Nacional de Salud" <${EMAIL_REMETENTE}>`,
+            from: EMAIL_REMETENTE,
             to: destinatarios.join(', '),
             replyTo: correo,
-            subject: `Nueva queja de salud - ${problema} - ${departamento}`,
+            subject: `Nueva queja de salud - ${problema}`,
             text: cuerpoDestinatarios,
             attachments: attachments
         });
@@ -310,7 +309,7 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
     if (correo && correo.includes('@')) {
         try {
             await transporter.sendMail({
-                from: `"Veeduría Nacional de Salud" <${EMAIL_REMETENTE}>`,
+                from: EMAIL_REMETENTE,
                 to: correo,
                 replyTo: EMAIL_REMETENTE,
                 subject: `Comprobante de registro de queja - ${problema}`,
