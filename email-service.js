@@ -232,7 +232,7 @@ async function enviarNotificacionQueja(quejaData, usuario) {
 
 Cordial saludo,
 
-A través de la Veeduría Nacional de Salud, me permito poner en su conocimiento una situación relacionada con mi salud que requiere atención y pronta respuesta.
+A través de la Veeduría Nacional por el Derecho a la Salud del Magisterio, informo de mi situación de salud, que requiere de la atención y pronta solución.
 
 En ejercicio de mis derechos constitucionales como ciudadano(a), y en busca de la garantía efectiva del derecho fundamental a la salud, solicito respetuosamente su intervención para dar solución a la problemática que expongo en esta comunicación.
 
@@ -284,8 +284,12 @@ Ubicación: ${ciudad}, ${departamento}
 CONTENIDO DE SU QUEJA:
 ${detalle}
 
-${soporte && soporte.length > 0 ? `ARCHIVOS ADJUNTOS:
-${soporte.map((archivo, index) => `${index + 1}. ${archivo}`).join("\n")}` : "No se adjuntaron archivos."}
+${
+    soporte && soporte.length > 0
+        ? `ARCHIVOS ADJUNTOS:
+${soporte.map((archivo, index) => `${index + 1}. ${archivo}`).join("\n")}`
+        : "No se adjuntaron archivos."
+}
 
 Para cualquier consulta relacionada con su caso, puede responder a este correo o contactar directamente a las entidades responsables mencionadas.
 
@@ -352,7 +356,7 @@ Este es un comprobante oficial de su registro de queja. Por favor, consérvelo p
                 replyTo: EMAIL_REMETENTE,
                 subject: `Comprobante de registro de queja - ${problema}`,
                 text: cuerpoUsuario,
-                attachments: attachments
+                attachments: attachments,
             });
 
             console.log(`📧 Comprobante enviado al usuario: ${correo}`);
