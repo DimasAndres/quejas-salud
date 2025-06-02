@@ -109,6 +109,8 @@ async function enviarAFormularioGoogle(datosQueja) {
       cedula: datosQueja.cedula || '',
       correo: datosQueja.correo || '',
       celular: datosQueja.celular || '',
+      telefono: datosQueja.celular || '', // Alternativa común
+      phone: datosQueja.celular || '', // Alternativa en inglés
       problema: datosQueja.problema || '',
       detalle: datosQueja.detalle || '',
       ciudad: datosQueja.ciudad || '',
