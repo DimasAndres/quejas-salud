@@ -35,6 +35,9 @@ let quejas = [];
 let nextUserId = 1;
 let nextQuejaId = 1;
 
+// Control de peticiones duplicadas
+let peticionesRecientes = new Set();
+
 // Datos de configuración
 const DEPARTAMENTOS = {
     "Amazonas": ["Leticia", "Puerto Nariño"],
@@ -317,6 +320,26 @@ const server = http.createServer(async (req, res) => {
         const body = req.body;
         const archivos = req.files || [];
         const { nombre, cedula, correo, celular, problema, detalle, ciudad, departamento, clasificacion, tipoUsuario, aceptoPolitica } = body;
+        
+        // Crear identificador único para la petición
+        const peticionId = `${correo}-${cedula}-${problema}-${Date.now()}`;
+        const peticionHash = require('crypto').createHash('md5').update(peticionId).digest('hex');
+        
+        // Verificar si es una petición duplicada
+        if (peticionesRecientes.has(peticionHash)) {
+          console.log('⚠️ Petición duplicada detectada, ignorando...');
+          sendJSON(res, 200, { 
+            success: true, 
+            mensaje: 'Queja ya procesada'
+          });
+          return;
+        }
+        
+        // Agregar a peticiones recientes (se limpia después de 30 segundos)
+        peticionesRecientes.add(peticionHash);
+        setTimeout(() => {
+          peticionesRecientes.delete(peticionHash);
+        }, 30000);
         
         // Obtener nombres de archivos subidos
         const nombresArchivos = archivos.map(archivo => archivo.filename);
