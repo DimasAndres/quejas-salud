@@ -321,8 +321,8 @@ const server = http.createServer(async (req, res) => {
         const archivos = req.files || [];
         const { nombre, cedula, correo, celular, problema, detalle, ciudad, departamento, clasificacion, tipoUsuario, aceptoPolitica } = body;
         
-        // Crear identificador único para la petición
-        const peticionId = `${correo}-${cedula}-${problema}-${Date.now()}`;
+        // Crear identificador único para la petición (sin timestamp para detectar duplicados inmediatos)
+        const peticionId = `${correo}-${cedula}-${problema}-${detalle}`;
         const peticionHash = require('crypto').createHash('md5').update(peticionId).digest('hex');
         
         // Verificar si es una petición duplicada
