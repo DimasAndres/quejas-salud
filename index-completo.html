@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <title>Veeduría Nacional de Salud - Sistema de Quejas</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            min-height: 95vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 25px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.6);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .back-button {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background: #5a6268;
+        }
+
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .veedor-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .veedor-item h5 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .file-upload {
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            margin: 20px 0;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload:hover {
+            background: #e9ecef;
+            border-color: #495057;
+        }
+
+        .file-upload.dragover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-item button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .auth-section {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #e9ecef;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            background: #e9ecef;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .auth-tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .publicidad {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .publicidad h5 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 5px;
+                border-radius: 15px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                padding: 15px 20px;
+                font-size: 15px;
+            }
+        }
+
+        #problemaOtro, #ciudadOtro {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">VS</div>
+            <h1>Veeduría Nacional de Salud</h1>
+            <p class="subtitle">Sistema de Recepción de Quejas del Magisterio</p>
+            <p>"Sólo organizados podemos luchar por un mejor servicio"</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Página de Inicio -->
+            <div id="inicio" class="page active">
+                <div class="welcome-section">
+                    <h2>Bienvenido al Sistema Oficial de Veeduría</h2>
+                    <div class="info-box">
+                        <h3>🏥 Sistema Seguro de Quejas de Salud</h3>
+                        <p><strong>Presente su queja de manera oficial y confiable</strong></p>
+                        <p>• Atención especializada para docentes y beneficiarios</p>
+                        <p>• Seguimiento personalizado de cada caso</p>
+                        <p>• Comunicación directa con autoridades de salud</p>
+                    </div>
+                </div>
+
+                <div class="button-grid">
+                    <button onclick="showPage('queja-directa')" class="btn">
+                        📝 Presentar Queja
+                    </button>
+                    <button onclick="showPage('sistema-auth')" class="btn">
+                        👤 Ingresar al Sistema
+                    </button>
+                    <button onclick="showPage('veedores')" class="btn btn-secondary">
+                        👥 Lista de Veedores
+                    </button>
+                    <button onclick="showPage('comunicados')" class="btn btn-secondary">
+                        📢 Comunicados
+                    </button>
+                </div>
+
+                <div class="publicidad">
+                    <h5>📱 Canales Oficiales</h5>
+                    <p>WhatsApp: +57 300 123 4567 | Instagram: @veeduria_salud</p>
+                </div>
+            </div>
+
+            <!-- Página de Autenticación -->
+            <div id="sistema-auth" class="page">
+                <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                <div class="auth-section">
+                    <h3 style="text-align: center; margin-bottom: 30px;">Sistema de Usuarios</h3>
+                    
+                    <div class="auth-tabs">
+                        <button class="auth-tab active" onclick="showAuthTab('login')">Iniciar Sesión</button>
+                        <button class="auth-tab" onclick="showAuthTab('registro')">Registrarse</button>
+                    </div>
+
+                    <!-- Formulario de Login -->
+                    <div id="loginForm" class="auth-form">
+                        <form onsubmit="loginUsuario(event)">
+                            <div class="form-group">
+                                <label for="loginCedula">Número de Cédula:</label>
+                                <input type="text" id="loginCedula" name="cedula" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="loginClave">Contraseña:</label>
+                                <input type="password" id="loginClave" name="clave" required>
+                            </div>
+                            <button type="submit" class="btn" style="width: 100%;">Ingresar</button>
+                        </form>
+                        <div id="loginMessage"></div>
+                    </div>
+
+                    <!-- Formulario de Registro -->
+                    <div id="registroForm" class="auth-form" style="display: none;">
+                        <form onsubmit="registrarUsuario(event)">
+                            <div class="form-group">
+                                <label for="regNombre">Nombre:</label>
+                                <input type="text" id="regNombre" name="nombre" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regApellido">Apellido:</label>
+                                <input type="text" id="regApellido" name="apellido" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regCedula">Número de Cédula:</label>
+                                <input type="text" id="regCedula" name="cedula" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regCelular">Teléfono/Celular:</label>
+                                <input type="tel" id="regCelular" name="celular" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regCorreo">Correo Electrónico:</label>
+                                <input type="email" id="regCorreo" name="correo" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regTipoUsuario">Tipo de Usuario:</label>
+                                <select id="regTipoUsuario" name="tipoUsuario" required>
+                                    <option value="">Seleccione...</option>
+                                    <option value="docente_activo">Docente Activo</option>
+                                    <option value="docente_pensionado">Docente Pensionado</option>
+                                    <option value="beneficiario">Beneficiario</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="regClave">Contraseña:</label>
+                                <input type="password" id="regClave" name="clave" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regConfirmarClave">Confirmar Contraseña:</label>
+                                <input type="password" id="regConfirmarClave" name="confirmarClave" required>
+                            </div>
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                    <input type="checkbox" name="aceptoPolitica" required style="margin-right: 8px;">
+                                    Acepto la política de tratamiento de datos personales
+                                </label>
+                            </div>
+                            <button type="submit" class="btn" style="width: 100%;">Registrarse</button>
+                        </form>
+                        <div id="registroMessage"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sistema para Usuarios Autorizados -->
+            <div id="sistema-autorizado" class="page">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>Panel de Usuario</h3>
+                    <button onclick="cerrarSesion()" class="btn btn-secondary">Cerrar Sesión</button>
+                </div>
+                
+                <div id="infoUsuario" class="info-box">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+
+                <div class="button-grid">
+                    <button onclick="mostrarFormularioQueja('primaria')" class="btn">
+                        Atención Primaria
+                    </button>
+                    <button onclick="mostrarFormularioQueja('complementaria')" class="btn">
+                        Atención Complementaria
+                    </button>
+                    <button onclick="mostrarFormularioQueja('medicamentos')" class="btn">
+                        Quejas por Medicamentos
+                    </button>
+                </div>
+
+                <h4>Mis Quejas Registradas</h4>
+                <div id="listadoQuejas">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+            </div>
+
+            <!-- Página de Presentar Queja -->
+            <div id="queja-directa" class="page">
+                <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                <h3>Presentar Queja de Salud</h3>
+                <div id="quejaContent">
+                    <div class="info-box">
+                        <p><strong>Seleccione el tipo de atención para su queja:</strong></p>
+                        <p>• <strong>Atención Primaria:</strong> Consultas generales, odontología básica, vacunación</p>
+                        <p>• <strong>Atención Complementaria:</strong> Especialistas, cirugías, terapias</p>
+                        <p>• <strong>Quejas por Medicamentos:</strong> Entrega incompleta, falta de disponibilidad, presentación incorrecta</p>
+                    </div>
+                    <button onclick="mostrarFormularioQueja('primaria')" class="btn">Atención Primaria</button>
+                    <button onclick="mostrarFormularioQueja('complementaria')" class="btn">Atención Complementaria</button>
+                    <button onclick="mostrarFormularioQueja('medicamentos')" class="btn">Quejas por Medicamentos</button>
+                </div>
+            </div>
+
+            <!-- Página de Veedores -->
+            <div id="veedores" class="page">
+                <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                <h3>Lista de Veedores</h3>
+                <div id="veedoresContent" class="veedores-list">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+            </div>
+
+            <!-- Página de Comunicados -->
+            <div id="comunicados" class="page">
+                <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                <h3>Comunicados Oficiales</h3>
+                <div class="info-box">
+                    <p><strong>Manténgase informado sobre las últimas actualizaciones</strong></p>
+                </div>
+                <div class="veedor-item">
+                    <h5>Nueva normativa para servicios de salud primaria</h5>
+                    <p>Se establecen nuevos estándares de atención para garantizar la calidad en los servicios...</p>
+                    <p style="color: #999;">Publicado: 15 de noviembre, 2024</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let archivosAdjuntos = [];
+        let usuarioActual = null;
+
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            if (pageId === 'veedores') {
+                cargarVeedores();
+            }
+        }
+
+        function showAuthTab(tabName) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tabName === 'login') {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('registroForm').style.display = 'none';
+            } else {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registroForm').style.display = 'block';
+            }
+        }
+
+        async function cargarVeedores() {
+            try {
+                const veedores = await apiRequest('/api/veedores');
+                let veedoresHTML = '';
+                
+                veedores.forEach(veedor => {
+                    veedoresHTML += `
+                        <div class="veedor-item">
+                            <h5>${veedor.nombre}</h5>
+                            <p><strong>Cargo:</strong> ${veedor.cargo}</p>
+                            <p><strong>Región:</strong> ${veedor.departamento}</p>
+                            <p><strong>Teléfono:</strong> ${veedor.telefono}</p>
+                            <p><strong>Email:</strong> ${veedor.email}</p>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('veedoresContent').innerHTML = veedoresHTML;
+            } catch (error) {
+                console.error('Error cargando veedores:', error);
+                document.getElementById('veedoresContent').innerHTML = '<div class="error">Error al cargar la lista de veedores</div>';
+            }
+        }
+
+        async function mostrarFormularioQueja(tipo) {
+            let tipoTexto = 'Atención Primaria';
+            if (tipo === 'complementaria') {
+                tipoTexto = 'Atención Complementaria';
+            } else if (tipo === 'medicamentos') {
+                tipoTexto = 'Quejas por Medicamentos';
+            }
+            
+            try {
+                const departamentos = await apiRequest('/api/departamentos');
+                const tiposQueja = await apiRequest(`/api/tipos-queja/${tipo}`);
+                
+                const departamentosOptions = departamentos.map(dep => 
+                    `<option value="${dep}">${dep}</option>`
+                ).join('');
+                
+                const tiposQuejaOptions = tiposQueja.map(tipoQ => 
+                    `<option value="${tipoQ}">${tipoQ}</option>`
+                ).join('');
+
+                const nombreCompleto = usuarioActual ? `${usuarioActual.nombre} ${usuarioActual.apellido}` : '';
+                const cedula = usuarioActual ? usuarioActual.cedula : '';
+                const correo = usuarioActual ? usuarioActual.correo : '';
+                const celular = usuarioActual ? usuarioActual.celular : '';
+
+                document.getElementById('quejaContent').innerHTML = `
+                    <h4>Formulario de Queja - ${tipoTexto}</h4>
+                    <form id="quejaForm" onsubmit="${usuarioActual ? 'enviarQuejaAutorizada' : 'enviarQueja'}(event)">
+                        <input type="hidden" name="clasificacion" value="${tipo}">
+                        
+                        <div class="info-box" style="margin-bottom: 20px;">
+                            <p><strong>Datos del Usuario:</strong></p>
+                            ${usuarioActual ? '<p>Los siguientes campos están precargados con su información de registro:</p>' : '<p>Complete todos los campos requeridos:</p>'}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nombre">Nombre Completo *</label>
+                            <input type="text" id="nombre" name="nombre" value="${nombreCompleto}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cedula">Número de Cédula *</label>
+                            <input type="text" id="cedula" name="cedula" value="${cedula}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="correo">Correo Electrónico *</label>
+                            <input type="email" id="correo" name="correo" value="${correo}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="celular">Teléfono/Celular</label>
+                            <input type="tel" id="celular" name="celular" value="${celular}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tipoUsuario">Tipo de Usuario *</label>
+                            <select id="tipoUsuario" name="tipoUsuario" required>
+                                <option value="">Seleccione...</option>
+                                <option value="docente_activo">Docente Activo</option>
+                                <option value="docente_pensionado">Docente Pensionado</option>
+                                <option value="beneficiario">Beneficiario</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="problema">Tipo de Problema *</label>
+                            <select id="problema" name="problema" required onchange="manejarSeleccionProblema()">
+                                <option value="">Seleccione el tipo de problema</option>
+                                ${tiposQuejaOptions}
+                            </select>
+                            <input type="text" id="problemaOtro" name="problemaOtro" placeholder="Especifique el tipo de problema">
+                        </div>
+                        <div class="form-group">
+                            <label for="detalle">Descripción Detallada *</label>
+                            <textarea id="detalle" name="detalle" required 
+                                      placeholder="Describa detalladamente su queja incluyendo fecha, lugar y personas involucradas"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="departamento">Departamento *</label>
+                            <select id="departamento" name="departamento" required onchange="cargarMunicipios()">
+                                <option value="">Seleccione departamento</option>
+                                ${departamentosOptions}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ciudad">Ciudad/Municipio *</label>
+                            <select id="ciudad" name="ciudad" required onchange="manejarSeleccionCiudad()" disabled>
+                                <option value="">Primero seleccione departamento</option>
+                            </select>
+                            <input type="text" id="ciudadOtro" name="ciudadOtro" placeholder="Escriba el nombre del municipio">
+                        </div>
+                        
+                        ${!usuarioActual ? `
+                        <div class="form-group" style="border: 1px solid #ddd; padding: 15px; border-radius: 5px; background: #f9f9f9;">
+                            <h5 style="margin: 0 0 10px 0; color: #333;">Política de Tratamiento de Datos Personales</h5>
+                            <div style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: white; margin-bottom: 10px; font-size: 12px; line-height: 1.4;">
+                                <p><strong>VEEDURÍA NACIONAL DE SALUD</strong></p>
+                                <p>En cumplimiento de la Ley 1581 de 2012 y sus decretos reglamentarios, informamos:</p>
+                                <p><strong>Finalidad:</strong> Sus datos serán utilizados para procesar, gestionar y dar seguimiento a su queja de salud.</p>
+                                <p><strong>Tratamiento:</strong> Los datos serán almacenados, procesados y utilizados únicamente para atender su solicitud.</p>
+                                <p><strong>Derechos:</strong> Puede conocer, actualizar, rectificar o solicitar la supresión de sus datos contactando a la Veeduría.</p>
+                                <p><strong>Datos recolectados:</strong> Nombre, cédula, correo, teléfono, tipo de usuario y detalles de la queja.</p>
+                                <p><strong>Autorización:</strong> Al marcar la casilla siguiente, autoriza expresamente el tratamiento de sus datos personales.</p>
+                            </div>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="aceptoPolitica" name="aceptoPolitica" required style="margin-right: 8px; width: 18px; height: 18px;"> 
+                                <span style="font-weight: bold;">
+                                    He leído y acepto la política de tratamiento de datos personales *
+                                </span>
+                            </label>
+                        </div>
+                        ` : `
+                        <input type="hidden" name="aceptoPolitica" value="true">
+                        `}
+                        
+                        <h5>Archivos Adjuntos (Opcional):</h5>
+                        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                            <p>Toque aquí para seleccionar archivos</p>
+                            <p style="font-size: 11px; color: #666;">PDF, DOC, DOCX, JPG, PNG (máx 5MB)</p>
+                            <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" onchange="handleFiles(this.files)">
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                        
+                        <button type="submit" class="btn">Enviar Queja</button>
+                        <button type="button" onclick="mostrarSeleccionTipo()" class="btn btn-secondary">Cancelar</button>
+                    </form>
+                    <div id="quejaMessage"></div>
+                `;
+                
+                if (usuarioActual) {
+                    document.getElementById('tipoUsuario').value = usuarioActual.tipoUsuario;
+                }
+                
+            } catch (error) {
+                console.error('Error cargando formulario:', error);
+                document.getElementById('quejaContent').innerHTML = '<div class="error">Error al cargar el formulario</div>';
+            }
+        }
+
+        function mostrarSeleccionTipo() {
+            document.getElementById('quejaContent').innerHTML = `
+                <div class="info-box">
+                    <p><strong>Seleccione el tipo de atención para su queja:</strong></p>
+                    <p>• <strong>Atención Primaria:</strong> Consultas generales, odontología básica, vacunación</p>
+                    <p>• <strong>Atención Complementaria:</strong> Especialistas, cirugías, terapias</p>
+                    <p>• <strong>Quejas por Medicamentos:</strong> Entrega incompleta, falta de disponibilidad, presentación incorrecta</p>
+                </div>
+                <button onclick="mostrarFormularioQueja('primaria')" class="btn">Atención Primaria</button>
+                <button onclick="mostrarFormularioQueja('complementaria')" class="btn">Atención Complementaria</button>
+                <button onclick="mostrarFormularioQueja('medicamentos')" class="btn">Quejas por Medicamentos</button>
+            `;
+        }
+
+        function manejarSeleccionProblema() {
+            const problemaSelect = document.getElementById('problema');
+            const problemaOtro = document.getElementById('problemaOtro');
+            
+            if (problemaSelect.value === 'Otro') {
+                problemaOtro.style.display = 'block';
+                problemaOtro.required = true;
+            } else {
+                problemaOtro.style.display = 'none';
+                problemaOtro.required = false;
+                problemaOtro.value = '';
+            }
+        }
+
+        async function cargarMunicipios() {
+            const departamento = document.getElementById('departamento').value;
+            const ciudadSelect = document.getElementById('ciudad');
+            
+            if (departamento) {
+                try {
+                    const municipios = await apiRequest(`/api/municipios/${encodeURIComponent(departamento)}`);
+                    
+                    ciudadSelect.innerHTML = '<option value="">Seleccione municipio</option>';
+                    ciudadSelect.disabled = false;
+                    
+                    municipios.forEach(municipio => {
+                        ciudadSelect.innerHTML += `<option value="${municipio}">${municipio}</option>`;
+                    });
+                    
+                    ciudadSelect.innerHTML += `<option value="otro">Otro (especificar)</option>`;
+                    
+                } catch (error) {
+                    console.error('Error cargando municipios:', error);
+                    ciudadSelect.innerHTML = '<option value="">Error cargando municipios</option>';
+                }
+            } else {
+                ciudadSelect.innerHTML = '<option value="">Primero seleccione departamento</option>';
+                ciudadSelect.disabled = true;
+            }
+        }
+
+        function manejarSeleccionCiudad() {
+            const ciudadSelect = document.getElementById('ciudad');
+            const ciudadOtro = document.getElementById('ciudadOtro');
+            
+            if (ciudadSelect.value === 'otro') {
+                ciudadOtro.style.display = 'block';
+                ciudadOtro.required = true;
+                ciudadSelect.required = false;
+            } else {
+                ciudadOtro.style.display = 'none';
+                ciudadOtro.required = false;
+                ciudadSelect.required = true;
+                ciudadOtro.value = '';
+            }
+        }
+
+        function handleFiles(files) {
+            for (let file of files) {
+                if (validateFile(file)) {
+                    archivosAdjuntos.push(file);
+                    updateFileList();
+                }
+            }
+        }
+
+        function validateFile(file) {
+            const allowedTypes = ['application/pdf', 'application/msword', 
+                                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                 'image/jpeg', 'image/jpg', 'image/png'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            if (!allowedTypes.includes(file.type)) {
+                alert('Tipo de archivo no permitido: ' + file.name);
+                return false;
+            }
+            if (file.size > maxSize) {
+                alert('El archivo es muy grande (máximo 5MB): ' + file.name);
+                return false;
+            }
+            return true;
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            archivosAdjuntos.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                    <button onclick="removeFile(${index})">Eliminar</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index) {
+            archivosAdjuntos.splice(index, 1);
+            updateFileList();
+        }
+
+        async function enviarQueja(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const messageDiv = document.getElementById('quejaMessage');
+            
+            // Manejar municipio personalizado
+            const ciudadSelect = document.getElementById('ciudad');
+            const ciudadOtro = document.getElementById('ciudadOtro');
+            
+            if (ciudadSelect.value === 'otro' && ciudadOtro.value.trim()) {
+                formData.set('ciudad', ciudadOtro.value.trim());
+            }
+            
+            // Manejar tipo de problema personalizado
+            const problemaSelect = document.getElementById('problema');
+            const problemaOtro = document.getElementById('problemaOtro');
+            
+            if (problemaSelect.value === 'Otro' && problemaOtro.value.trim()) {
+                formData.set('problema', problemaOtro.value.trim());
+            }
+            
+            // Agregar archivos adjuntos
+            if (archivosAdjuntos.length > 0) {
+                archivosAdjuntos.forEach(file => {
+                    formData.append('soporte', file);
+                });
+            }
+            
+            try {
+                const result = await fetch('/api/quejas', {
+                    method: 'POST',
+                    body: formData
+                }).then(res => res.json());
+                
+                if (result.success) {
+                    const mensaje = result.mensaje || 'Queja registrada exitosamente';
+                    messageDiv.innerHTML = `<div class="success">${mensaje}</div>`;
+                    e.target.reset();
+                    archivosAdjuntos = [];
+                    updateFileList();
+                } else {
+                    let errorMessage = result.error || 'Error al registrar la queja';
+                    if (result.sugerencia) {
+                        errorMessage += `<br><br><strong>Sugerencia:</strong><br>${result.sugerencia}`;
+                    }
+                    messageDiv.innerHTML = `<div class="error">${errorMessage}</div>`;
+                }
+            } catch (error) {
+                console.error('Error enviando queja:', error);
+                messageDiv.innerHTML = `<div class="error">Error de conexión. Intente nuevamente.</div>`;
+            }
+        }
+
+        async function enviarQuejaAutorizada(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const messageDiv = document.getElementById('quejaMessage');
+            
+            // Manejar municipio personalizado
+            const ciudadSelect = document.getElementById('ciudad');
+            const ciudadOtro = document.getElementById('ciudadOtro');
+            
+            if (ciudadSelect.value === 'otro' && ciudadOtro.value.trim()) {
+                formData.set('ciudad', ciudadOtro.value.trim());
+            }
+            
+            // Manejar tipo de problema personalizado
+            const problemaSelect = document.getElementById('problema');
+            const problemaOtro = document.getElementById('problemaOtro');
+            
+            if (problemaSelect.value === 'Otro' && problemaOtro.value.trim()) {
+                formData.set('problema', problemaOtro.value.trim());
+            }
+            
+            // Agregar archivos adjuntos
+            if (archivosAdjuntos.length > 0) {
+                archivosAdjuntos.forEach(file => {
+                    formData.append('soporte', file);
+                });
+            }
+            
+            try {
+                const result = await fetch('/api/quejas', {
+                    method: 'POST',
+                    body: formData
+                }).then(res => res.json());
+                
+                if (result.success) {
+                    const mensaje = result.mensaje || 'Queja registrada exitosamente';
+                    messageDiv.innerHTML = `<div class="success">${mensaje}</div>`;
+                    e.target.reset();
+                    archivosAdjuntos = [];
+                    updateFileList();
+                    cargarMisQuejas();
+                } else {
+                    let errorMessage = result.error || 'Error al registrar la queja';
+                    if (result.sugerencia) {
+                        errorMessage += `<br><br><strong>Sugerencia:</strong><br>${result.sugerencia}`;
+                    }
+                    messageDiv.innerHTML = `<div class="error">${errorMessage}</div>`;
+                }
+            } catch (error) {
+                console.error('Error enviando queja:', error);
+                messageDiv.innerHTML = `<div class="error">Error de conexión. Intente nuevamente.</div>`;
+            }
+        }
+
+        async function registrarUsuario(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            if (data.clave !== data.confirmarClave) {
+                document.getElementById('registroMessage').innerHTML = '<div class="error">Las contraseñas no coinciden</div>';
+                return;
+            }
+            
+            delete data.confirmarClave;
+            
+            try {
+                const result = await apiRequest('/api/register', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                const messageDiv = document.getElementById('registroMessage');
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success">Usuario registrado exitosamente. Puede ingresar al sistema.</div>';
+                    setTimeout(() => {
+                        showAuthTab('login');
+                    }, 2000);
+                } else {
+                    messageDiv.innerHTML = `<div class="error">${result.error || 'Error al registrar usuario'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error registrando usuario:', error);
+                document.getElementById('registroMessage').innerHTML = '<div class="error">Error de conexión. Intente nuevamente.</div>';
+            }
+        }
+
+        async function loginUsuario(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const result = await apiRequest('/api/login', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                const messageDiv = document.getElementById('loginMessage');
+                if (result.success) {
+                    usuarioActual = result.usuario;
+                    actualizarInfoUsuario();
+                    showPage('sistema-autorizado');
+                    cargarMisQuejas();
+                } else {
+                    messageDiv.innerHTML = `<div class="error">${result.error || 'Error al iniciar sesión'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error en login:', error);
+                document.getElementById('loginMessage').innerHTML = '<div class="error">Error de conexión. Intente nuevamente.</div>';
+            }
+        }
+
+        function actualizarInfoUsuario() {
+            if (usuarioActual) {
+                const tipoUsuarioLabel = {
+                    'docente_activo': 'Docente Activo',
+                    'docente_pensionado': 'Docente Pensionado',
+                    'beneficiario': 'Beneficiario'
+                };
+                
+                document.getElementById('infoUsuario').innerHTML = 
+                    `Bienvenido/a ${usuarioActual.nombre} ${usuarioActual.apellido} - ${tipoUsuarioLabel[usuarioActual.tipoUsuario]}`;
+            }
+        }
+
+        async function cargarMisQuejas() {
+            if (!usuarioActual) return;
+            
+            try {
+                const result = await apiRequest(`/api/quejas/${usuarioActual.id}`);
+                const listadoDiv = document.getElementById('listadoQuejas');
+                
+                if (result.quejas && result.quejas.length > 0) {
+                    let html = '';
+                    result.quejas.forEach(queja => {
+                        const fecha = new Date(queja.fechaCreacion).toLocaleDateString('es-CO');
+                        html += `
+                            <div class="veedor-item">
+                                <h5>Queja #${queja.id} - ${queja.problema}</h5>
+                                <p><strong>Detalle:</strong> ${queja.detalle}</p>
+                                <p><strong>Ciudad:</strong> ${queja.ciudad}, ${queja.departamento}</p>
+                                <p><strong>Clasificación:</strong> ${queja.clasificacion}</p>
+                                <p><strong>Estado:</strong> ${queja.estado}</p>
+                                <p><strong>Fecha:</strong> ${fecha}</p>
+                            </div>
+                        `;
+                    });
+                    listadoDiv.innerHTML = html;
+                } else {
+                    listadoDiv.innerHTML = '<div class="info-box"><p>No ha registrado quejas aún.</p></div>';
+                }
+            } catch (error) {
+                console.error('Error cargando quejas:', error);
+                document.getElementById('listadoQuejas').innerHTML = '<div class="error">Error al cargar las quejas</div>';
+            }
+        }
+
+        function cerrarSesion() {
+            if (confirm('¿Está seguro que desea cerrar sesión?')) {
+                usuarioActual = null;
+                showPage('inicio');
+                document.querySelectorAll('form').forEach(form => form.reset());
+                document.querySelectorAll('.error, .success').forEach(msg => msg.remove());
+            }
+        }
+
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error en la petición:', error);
+                return { error: 'Error de conexión con el servidor' };
+            }
+        }
+    </script>
+</body>
+</html>
