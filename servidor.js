@@ -79,17 +79,6 @@ const TIPOS_COMPLEMENTARIA = [
     "Terapias (Fisioterapia, psicología)"
 ];
 
-const TIPOS_MEDICAMENTOS = [
-    "No entregan medicamento completo",
-    "No tienen medicamento en el dispensario",
-    "No tienen la presentación correcta",
-    "Medicamento vencido o en mal estado",
-    "Demora excesiva en la entrega",
-    "Medicamento diferente al formulado",
-    "Falta de información sobre el medicamento",
-    "Otro"
-];
-
 // Función para parsear JSON del cuerpo de la petición
 function parseBody(req) {
   return new Promise((resolve, reject) => {
@@ -390,8 +379,6 @@ const server = http.createServer(async (req, res) => {
       tipos = TIPOS_PRIMARIA;
     } else if (clasificacion === 'complementaria') {
       tipos = TIPOS_COMPLEMENTARIA;
-    } else if (clasificacion === 'medicamentos') {
-      tipos = TIPOS_MEDICAMENTOS;
     }
     sendJSON(res, 200, tipos);
     return;
