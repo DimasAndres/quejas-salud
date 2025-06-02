@@ -25,6 +25,10 @@ const upload = multer({
   }
 });
 
+// Configuración del formulario de Google
+const FORMULARIO_URL = "https://script.google.com/macros/s/AKfycbz2zC5NiFfqhGck4yVgvcEuCY-zv64AB7OJSKd-PyMyH3NQMr1L0sakPyyNtxaiFkya/exec";
+const FORMULARIO_ACTIVO = true;
+
 // Almacenamiento en memoria
 let users = [];
 let quejas = [];
@@ -87,6 +91,68 @@ const TIPOS_MEDICAMENTOS = [
     "Calidad deficiente de medicamentos",
     "Problemas con medicamentos especializados"
 ];
+
+// Función para enviar datos al formulario de Google
+async function enviarAFormularioGoogle(datosQueja) {
+  if (!FORMULARIO_ACTIVO) {
+    console.log('📝 Formulario de Google desactivado');
+    return { exito: false, mensaje: 'Formulario desactivado' };
+  }
+
+  try {
+    const https = require('https');
+    const querystring = require('querystring');
+    
+    // Preparar datos para Google Forms
+    const formData = querystring.stringify({
+      nombre: datosQueja.nombre || '',
+      cedula: datosQueja.cedula || '',
+      correo: datosQueja.correo || '',
+      celular: datosQueja.celular || '',
+      problema: datosQueja.problema || '',
+      detalle: datosQueja.detalle || '',
+      ciudad: datosQueja.ciudad || '',
+      departamento: datosQueja.departamento || '',
+      clasificacion: datosQueja.clasificacion || '',
+      tipoUsuario: datosQueja.tipoUsuario || '',
+      fecha: new Date().toISOString()
+    });
+
+    return new Promise((resolve) => {
+      const url = new URL(FORMULARIO_URL);
+      const options = {
+        hostname: url.hostname,
+        path: url.pathname + url.search,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Length': Buffer.byteLength(formData)
+        }
+      };
+
+      const req = https.request(options, (res) => {
+        if (res.statusCode === 200 || res.statusCode === 302) {
+          console.log('📝 Datos enviados exitosamente al formulario de Google');
+          resolve({ exito: true, mensaje: 'Enviado a Google Forms' });
+        } else {
+          console.error('❌ Error enviando a Google Forms:', res.statusCode);
+          resolve({ exito: false, mensaje: `Error ${res.statusCode}` });
+        }
+      });
+
+      req.on('error', (error) => {
+        console.error('❌ Error enviando al formulario de Google:', error);
+        resolve({ exito: false, mensaje: error.message });
+      });
+
+      req.write(formData);
+      req.end();
+    });
+  } catch (error) {
+    console.error('❌ Error enviando al formulario de Google:', error);
+    return { exito: false, mensaje: error.message };
+  }
+}
 
 // Función para parsear JSON del cuerpo de la petición
 function parseBody(req) {
@@ -317,16 +383,27 @@ const server = http.createServer(async (req, res) => {
       
       console.log(`📋 Nueva queja registrada: ${problema} - ${departamento} (${clasificacion})`);
       
+      // Enviar al formulario de Google
+      let resultadoGoogle = { exito: false, mensaje: 'No enviado' };
+      try {
+        resultadoGoogle = await enviarAFormularioGoogle(nuevaQueja);
+      } catch (googleError) {
+        console.error('Error enviando a Google Forms:', googleError);
+      }
+      
       // Enviar correos automáticamente
       try {
         const resultadosCorreo = await enviarNotificacionQueja(nuevaQueja, usuario);
         
-        let mensajeCorreo = '';
+        let mensajeCompleto = '';
         if (resultadosCorreo.destinatariosEnviado) {
-          mensajeCorreo += 'Notificación enviada a autoridades de salud. ';
+          mensajeCompleto += 'Notificación enviada a autoridades de salud. ';
         }
         if (resultadosCorreo.usuarioEnviado) {
-          mensajeCorreo += 'Comprobante enviado a su correo. ';
+          mensajeCompleto += 'Comprobante enviado a su correo. ';
+        }
+        if (resultadoGoogle.exito) {
+          mensajeCompleto += 'Datos registrados en formulario oficial. ';
         }
         if (resultadosCorreo.errores.length > 0) {
           console.log('Advertencias en envío de correos:', resultadosCorreo.errores);
@@ -335,14 +412,20 @@ const server = http.createServer(async (req, res) => {
         sendJSON(res, 200, { 
           success: true, 
           quejaId: nuevaQueja.id,
-          mensaje: `Queja registrada exitosamente. ${mensajeCorreo}`.trim()
+          mensaje: `Queja registrada exitosamente. ${mensajeCompleto}`.trim()
         });
       } catch (emailError) {
         console.error('Error al enviar correos:', emailError);
+        let mensajeFinal = 'Queja registrada exitosamente. ';
+        if (resultadoGoogle.exito) {
+          mensajeFinal += 'Datos registrados en formulario oficial. ';
+        }
+        mensajeFinal += 'Error en envío de notificaciones por correo.';
+        
         sendJSON(res, 200, { 
           success: true, 
           quejaId: nuevaQueja.id,
-          mensaje: 'Queja registrada exitosamente. Error en envío de notificaciones por correo.'
+          mensaje: mensajeFinal
         });
       }
     } catch (error) {
