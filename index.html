@@ -698,9 +698,11 @@
                                 <p><strong>Seleccione el tipo de atención para su queja:</strong></p>
                                 <p>• <strong>Atención Primaria:</strong> Consultas generales, odontología básica, vacunación</p>
                                 <p>• <strong>Atención Complementaria:</strong> Especialistas, cirugías, terapias</p>
+                                <p>• <strong>Medicamentos:</strong> Suministro, calidad, acceso a medicamentos</p>
                             </div>
                             <button onclick="mostrarFormularioQueja('primaria')" class="btn">Atención Primaria</button>
                             <button onclick="mostrarFormularioQueja('complementaria')" class="btn">Atención Complementaria</button>
+                            <button onclick="mostrarFormularioQueja('medicamentos')" class="btn">Medicamentos</button>
                         </div>
                     </div>
 
@@ -834,7 +836,14 @@
         }
 
         async function mostrarFormularioQueja(tipo) {
-            const tipoTexto = tipo === 'primaria' ? 'Atención Primaria' : 'Atención Complementaria';
+            let tipoTexto;
+            if (tipo === 'primaria') {
+                tipoTexto = 'Atención Primaria';
+            } else if (tipo === 'complementaria') {
+                tipoTexto = 'Atención Complementaria';
+            } else if (tipo === 'medicamentos') {
+                tipoTexto = 'Medicamentos';
+            }
             
             try {
                 // Cargar departamentos y tipos de queja
