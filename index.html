@@ -1024,6 +1024,22 @@
                     ciudadSelect.disabled = true;
                 }
             });
+            
+            // Configurar evento para el campo "Otro" en tipo de problema
+            const problemaSelect = document.getElementById('problema');
+            if (problemaSelect) {
+                problemaSelect.addEventListener('change', function() {
+                    const problemaOtroInput = document.getElementById('problemaOtro');
+                    if (this.value === 'Otro') {
+                        problemaOtroInput.style.display = 'block';
+                        problemaOtroInput.required = true;
+                    } else {
+                        problemaOtroInput.style.display = 'none';
+                        problemaOtroInput.required = false;
+                        problemaOtroInput.value = '';
+                    }
+                });
+            }
 
             // Configurar manejo de archivos
             const fileUpload = document.getElementById('fileUpload');
@@ -1190,9 +1206,22 @@
                 return;
             }
             
+            // Manejar tipo de problema personalizado si se seleccionó "Otro"
+            const problemaSelect = document.querySelector('select[name="problema"]');
+            const problemaOtroInput = document.querySelector('input[name="problemaOtro"]');
+            
+            if (problemaSelect.value === 'Otro' && problemaOtroInput.value.trim()) {
+                data.problema = problemaOtroInput.value.trim();
+            }
+            
             // Crear FormData para envío con archivos
             const submitFormData = new FormData(e.target);
             submitFormData.set('paraBeneficiario', data.paraBeneficiario);
+            
+            // Actualizar problema si se especificó uno personalizado
+            if (data.problema) {
+                submitFormData.set('problema', data.problema);
+            }
             
             // Agregar archivos adjuntos
             if (archivosAdjuntos.length > 0) {
@@ -1383,6 +1412,14 @@
                 data.ciudad = ciudadOtroInput.value.trim();
             }
             
+            // Manejar tipo de problema personalizado si se seleccionó "Otro"
+            const problemaSelect = document.querySelector('select[name="problema"]');
+            const problemaOtroInput = document.querySelector('input[name="problemaOtro"]');
+            
+            if (problemaSelect.value === 'Otro' && problemaOtroInput.value.trim()) {
+                data.problema = problemaOtroInput.value.trim();
+            }
+            
             // Validar contenido antes de enviar
             const validacion = validarContenidoQueja(data.problema, data.detalle);
             const messageDiv = document.getElementById('quejaMessage');
@@ -1409,6 +1446,14 @@
             // Manejar municipio personalizado
             if (ciudadSelect.value === 'otro' && ciudadOtroInput.value.trim()) {
                 submitFormData.set('ciudad', ciudadOtroInput.value.trim());
+            }
+            
+            // Manejar tipo de problema personalizado
+            const problemaSelect = document.querySelector('select[name="problema"]');
+            const problemaOtroInput = document.querySelector('input[name="problemaOtro"]');
+            
+            if (problemaSelect.value === 'Otro' && problemaOtroInput.value.trim()) {
+                submitFormData.set('problema', problemaOtroInput.value.trim());
             }
             
             // Agregar archivos adjuntos
