@@ -281,6 +281,11 @@ Tipo de Atención: ${clasificacion}
 Tipo de Queja: ${problema}
 Ubicación: ${ciudad}, ${departamento}
 
+CONTENIDO DE SU QUEJA:
+${detalle}
+
+${soporte && soporte.length > 0 ? `ARCHIVOS ADJUNTOS:
+${soporte.map((archivo, index) => `${index + 1}. ${archivo}`).join("\n")}` : "No se adjuntaron archivos."}
 
 Para cualquier consulta relacionada con su caso, puede responder a este correo o contactar directamente a las entidades responsables mencionadas.
 
