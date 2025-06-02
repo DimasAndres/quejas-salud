@@ -252,7 +252,6 @@ Municipio: ${ciudad}
 Tipo de queja: ${problema}
 Para beneficiario: ${paraBeneficiario ? "Sí" : "No"}
 
-Entidad responsable: ${responsable}
 Copia enviada a: ${infoDestinatarios.copia.length > 0 ? infoDestinatarios.copia.join(", ") : "No aplica"}
 
 
