@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=3.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <title>Veeduría Nacional de Salud - Sistema de Quejas</title>
+    
+    <!-- Polyfills para navegadores antiguos -->
+    <script>
+        // Polyfill para Internet Explorer
+        if (!Array.prototype.includes) {
+            Array.prototype.includes = function(searchElement, fromIndex) {
+                return this.indexOf(searchElement, fromIndex) !== -1;
+            };
+        }
+        if (!String.prototype.includes) {
+            String.prototype.includes = function(search, start) {
+                if (typeof start !== 'number') start = 0;
+                if (start + search.length > this.length) return false;
+                return this.indexOf(search, start) !== -1;
+            };
+        }
+        // Polyfill para Promise (IE)
+        if (typeof Promise === 'undefined') {
+            window.Promise = function(executor) {
+                var self = this;
+                this.state = 'pending';
+                this.value = undefined;
+                this.handlers = [];
+                
+                function resolve(result) {
+                    if (self.state === 'pending') {
+                        self.state = 'fulfilled';
+                        self.value = result;
+                        self.handlers.forEach(function(handler) {
+                            handler.onFulfilled(result);
+                        });
+                    }
+                }
+                
+                function reject(error) {
+                    if (self.state === 'pending') {
+                        self.state = 'rejected';
+                        self.value = error;
+                        self.handlers.forEach(function(handler) {
+                            handler.onRejected(error);
+                        });
+                    }
+                }
+                
+                this.then = function(onFulfilled, onRejected) {
+                    return new Promise(function(resolve, reject) {
+                        function handle() {
+                            if (self.state === 'fulfilled') {
+                                if (typeof onFulfilled === 'function') {
+                                    try {
+                                        resolve(onFulfilled(self.value));
+                                    } catch (ex) {
+                                        reject(ex);
+                                    }
+                                } else {
+                                    resolve(self.value);
+                                }
+                            } else if (self.state === 'rejected') {
+                                if (typeof onRejected === 'function') {
+                                    try {
+                                        resolve(onRejected(self.value));
+                                    } catch (ex) {
+                                        reject(ex);
+                                    }
+                                } else {
+                                    reject(self.value);
+                                }
+                            } else {
+                                self.handlers.push({
+                                    onFulfilled: function(result) {
+                                        if (typeof onFulfilled === 'function') {
+                                            try {
+                                                resolve(onFulfilled(result));
+                                            } catch (ex) {
+                                                reject(ex);
+                                            }
+                                        } else {
+                                            resolve(result);
+                                        }
+                                    },
+                                    onRejected: function(error) {
+                                        if (typeof onRejected === 'function') {
+                                            try {
+                                                resolve(onRejected(error));
+                                            } catch (ex) {
+                                                reject(ex);
+                                            }
+                                        } else {
+                                            reject(error);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        handle();
+                    });
+                };
+                
+                try {
+                    executor(resolve, reject);
+                } catch (ex) {
+                    reject(ex);
+                }
+            };
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .app-layout {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            -webkit-box-align: start;
+            -ms-flex-align: start;
+            align-items: flex-start;
+            gap: 20px;
+            margin-top: 20px;
+            -webkit-flex-wrap: nowrap;
+            -ms-flex-wrap: nowrap;
+            flex-wrap: nowrap;
+        }
+        
+        /* Soporte para CSS Grid con fallback a Flexbox */
+        @supports (display: grid) {
+            .app-layout {
+                display: grid;
+                grid-template-columns: 280px 420px 280px;
+                gap: 20px;
+                margin-top: 20px;
+                justify-content: center;
+            }
+        }
+        
+        .main-app {
+            width: 420px;
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 420px;
+            flex: 0 0 420px;
+        }
+        .sidebar {
+            width: 280px;
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 280px;
+            flex: 0 0 280px;
+        }
+        
+        @media (max-width: 1200px) {
+            .app-layout {
+                gap: 15px;
+            }
+            @supports (display: grid) {
+                .app-layout {
+                    grid-template-columns: 250px 380px 250px;
+                }
+            }
+            .main-app {
+                width: 380px;
+                -ms-flex: 0 0 380px;
+                flex: 0 0 380px;
+            }
+            .sidebar {
+                width: 250px;
+                -ms-flex: 0 0 250px;
+                flex: 0 0 250px;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .app-layout {
+                -webkit-box-orient: vertical;
+                -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                gap: 20px;
+            }
+            @supports (display: grid) {
+                .app-layout {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+            }
+            .main-app {
+                width: 100%;
+                max-width: 420px;
+                margin: 0 auto;
+                -ms-flex: none;
+                flex: none;
+            }
+            .sidebar {
+                width: 100%;
+                max-width: 420px;
+                margin: 0 auto;
+                -ms-flex: none;
+                flex: none;
+            }
+        }
+        .header {
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(44, 85, 48, 0.3);
+        }
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .header h2 {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .main-content {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .main-content h3 {
+            color: #2c5530;
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(44, 85, 48, 0.2);
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+            min-height: 44px;
+        }
+        .btn:hover, .btn:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(44, 85, 48, 0.3);
+            outline: none;
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(44, 85, 48, 0.3);
+        }
+        
+        /* Mejoras para dispositivos táctiles */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover {
+                transform: none;
+                box-shadow: 0 2px 4px rgba(44, 85, 48, 0.2);
+            }
+            .btn:active {
+                background: linear-gradient(135deg, #1e3a20 0%, #3a5f41 100%);
+                transform: scale(0.98);
+            }
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+        }
+        .btn-secondary:hover {
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+        }
+        .patrocinadores {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+        }
+        .patrocinadores h4 {
+            color: #2c5530;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .publicidad {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4e6d4 100%);
+            border: 1px solid #c3e6c3;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .publicidad h5 {
+            color: #2c5530;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .publicidad p {
+            color: #2c5530;
+            font-size: 10px;
+            line-height: 1.3;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c5530;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-color: #fff;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            min-height: 44px;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #2c5530;
+            -webkit-box-shadow: 0 0 0 2px rgba(44, 85, 48, 0.2);
+            -moz-box-shadow: 0 0 0 2px rgba(44, 85, 48, 0.2);
+            box-shadow: 0 0 0 2px rgba(44, 85, 48, 0.2);
+        }
+        
+        .form-group select {
+            background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23666' d='M2 0L0 2h4zM2 5L0 3h4z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+            padding-right: 40px;
+        }
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .back-button {
+            background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .back-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+        }
+        .info-box {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2c5530;
+        }
+        .info-box p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #2c5530;
+        }
+        .success {
+            color: #2e7d32;
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .error {
+            color: #d32f2f;
+            background-color: #ffebee;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 10px 0;
+            background-color: #fafafa;
+            transition: all 0.3s ease;
+        }
+        .file-upload:hover {
+            border-color: #2c5530;
+            background-color: #f0f8f0;
+        }
+        .file-upload.dragover {
+            border-color: #2c5530;
+            background-color: #e8f5e8;
+        }
+        .file-list {
+            margin-top: 10px;
+        }
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px 0;
+            background-color: #f9f9f9;
+            font-size: 12px;
+        }
+        .file-item button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .veedores-list {
+            margin: 20px 0;
+        }
+        .veedor-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #2c5530;
+        }
+        .veedor-item h5 {
+            color: #2c5530;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .veedor-item p {
+            margin: 2px 0;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* ===== MEJORAS ESPECÍFICAS PARA DISPOSITIVOS MÓVILES ===== */
+        
+        /* Mejorar el scrolling en dispositivos móviles */
+        html {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        
+        /* Evitar zoom accidental en inputs */
+        input[type="text"], input[type="email"], input[type="password"], 
+        input[type="tel"], input[type="number"], select, textarea {
+            font-size: 16px !important;
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+        
+        /* Mejorar tap targets para dispositivos táctiles */
+        @media (hover: none) and (pointer: coarse) {
+            .btn, .back-button, .file-item button {
+                min-height: 48px;
+                min-width: 48px;
+                padding: 14px 20px;
+            }
+            
+            .form-group input, .form-group select, .form-group textarea {
+                min-height: 48px;
+                padding: 14px;
+            }
+        }
+        
+        /* Mejoras adicionales para pantallas pequeñas */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .main-content, .sidebar {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .header h2 {
+                font-size: 14px;
+            }
+            
+            .form-group label {
+                font-size: 16px;
+            }
+            
+            .btn {
+                font-size: 18px;
+                padding: 16px;
+            }
+        }
+        
+        /* Orientación landscape en móviles */
+        @media screen and (max-width: 900px) and (orientation: landscape) {
+            .app-layout {
+                -webkit-box-orient: horizontal;
+                -webkit-box-direction: normal;
+                -ms-flex-direction: row;
+                flex-direction: row;
+                -webkit-flex-wrap: wrap;
+                -ms-flex-wrap: wrap;
+                flex-wrap: wrap;
+            }
+            
+            .main-app {
+                -webkit-box-ordinal-group: 1;
+                -ms-flex-order: 0;
+                order: 0;
+            }
+            
+            .sidebar {
+                -webkit-box-ordinal-group: 2;
+                -ms-flex-order: 1;
+                order: 1;
+                width: 45%;
+                max-width: none;
+            }
+        }
+        
+        /* Soporte para Internet Explorer */
+        @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+            .app-layout {
+                display: -ms-flexbox;
+                -ms-flex-pack: center;
+                -ms-flex-align: start;
+            }
+            
+            .main-app, .sidebar {
+                -ms-flex: none;
+            }
+        }
+        
+        /* Mejoras para accesibilidad y navegación por teclado */
+        .btn:focus, .back-button:focus, 
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: 2px solid #2c5530;
+            outline-offset: 2px;
+        }
+        
+        /* Indicador visual para elementos clickeables */
+        .btn, .back-button, .file-item button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after, .back-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+        
+        .btn:active::after, .back-button:active::after {
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Veeduría Nacional de Salud</h1>
+            <h2>Sistema de Recepción de Quejas</h2>
+        </div>
+        
+        <div class="app-layout">
+            <!-- Columna Izquierda - Manuales y Publicidad -->
+            <div class="sidebar">
+                <div class="patrocinadores">
+                    <h4>📚 Manuales</h4>
+                    
+                    <div class="publicidad">
+                        <h5>📖 GUÍA DE USUARIO</h5>
+                        <p>Manual completo sobre cómo usar el sistema de quejas paso a paso</p>
+                    </div>
+                    
+                    <div class="publicidad">
+                        <h5>⚖️ MARCO LEGAL</h5>
+                        <p>Conoce tus derechos como usuario del sistema de salud en Colombia</p>
+                    </div>
+                    
+                    <div class="publicidad">
+                        <h5>📋 TIPOS DE QUEJAS</h5>
+                        <p>Clasificación de quejas: primaria, complementaria y procedimientos especiales</p>
+                    </div>
+                    
+                    <div class="publicidad">
+                        <h5>🔍 SEGUIMIENTO</h5>
+                        <p>Cómo hacer seguimiento a tu queja y conocer el estado del proceso</p>
+                    </div>
+                    
+                    <h4 style="margin-top: 30px;">📢 Publicidad</h4>
+                    
+                    <div class="publicidad" style="background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); color: white;">
+                        <h5>🏥 SALUD DIGITAL</h5>
+                        <p>Plataforma innovadora para la gestión de servicios de salud</p>
+                    </div>
+                    
+                    <div class="publicidad" style="background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%); color: white;">
+                        <h5>⚕️ MEDICAMENTOS PLUS</h5>
+                        <p>Tu farmacia de confianza con entrega a domicilio 24/7</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Central - Aplicación Principal -->
+            <div class="main-app">
+                <div class="main-content">
+                    <!-- Página de Inicio -->
+                    <div id="inicio" class="page active">
+                        <h3>Sistema de Quejas de Salud</h3>
+                        
+                        <button onclick="showPage('queja-directa')" class="btn">Presentar Queja</button>
+                        <button onclick="showPage('veedores')" class="btn">Ver Veedores</button>
+                        <button onclick="showPage('comunicados')" class="btn">Comunicados Oficiales</button>
+                        <button onclick="cerrarApp()" class="btn btn-secondary">Salir</button>
+                        
+                        <div class="info-box">
+                            <p><strong>Bienvenido al Sistema Oficial</strong></p>
+                            <p>• Sistema seguro y confiable</p>
+                            <p>• Atención 24/7 disponible</p>
+                            <p>• Seguimiento de tu caso</p>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Página de Presentar Queja -->
+                    <div id="queja-directa" class="page">
+                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                        <h3>Presentar Queja de Salud</h3>
+                        <div id="quejaContent">
+                            <div class="info-box">
+                                <p><strong>Seleccione el tipo de atención para su queja:</strong></p>
+                                <p>• <strong>Atención Primaria:</strong> Consultas generales, odontología básica, vacunación</p>
+                                <p>• <strong>Atención Complementaria:</strong> Especialistas, cirugías, terapias</p>
+                            </div>
+                            <button onclick="mostrarFormularioQueja('primaria')" class="btn">Atención Primaria</button>
+                            <button onclick="mostrarFormularioQueja('complementaria')" class="btn">Atención Complementaria</button>
+                        </div>
+                    </div>
+
+                    <!-- Página de Veedores -->
+                    <div id="veedores" class="page">
+                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                        <h3>Lista de Veedores</h3>
+                        <div id="veedoresContent" class="veedores-list">
+                            <!-- Se llenará con JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Página de Comunicados -->
+                    <div id="comunicados" class="page">
+                        <button onclick="showPage('inicio')" class="back-button">← Volver al Inicio</button>
+                        <h3>Comunicados Oficiales</h3>
+                        <div class="info-box">
+                            <p><strong>Manténgase informado sobre las últimas actualizaciones de la Veeduría Nacional de Salud</strong></p>
+                        </div>
+                        <div id="comunicadosContent">
+                            <div class="veedor-item">
+                                <h5>Nueva normativa para servicios de salud primaria</h5>
+                                <p>Se establecen nuevos estándares de atención para garantizar la calidad en los servicios de consulta externa y atención ambulatoria...</p>
+                                <p style="color: #999; font-style: italic;">Publicado el 25 de mayo de 2025</p>
+                            </div>
+                            <div class="veedor-item">
+                                <h5>Informe mensual de quejas procesadas</h5>
+                                <p>Durante el mes de abril se procesaron 1,245 quejas ciudadanas, de las cuales el 78% fueron resueltas satisfactoriamente...</p>
+                                <p style="color: #999; font-style: italic;">Publicado el 15 de mayo de 2025</p>
+                            </div>
+                            <div class="veedor-item">
+                                <h5>Campaña de prevención en salud mental</h5>
+                                <p>La Veeduría lanza una nueva campaña de sensibilización sobre la importancia de la atención en salud mental...</p>
+                                <p style="color: #999; font-style: italic;">Publicado el 10 de mayo de 2025</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha - Comunicados y Redes -->
+            <div class="sidebar">
+                <div class="patrocinadores">
+                    <h4>📰 Comunicados</h4>
+                    
+                    <div class="publicidad">
+                        <h5>📢 ÚLTIMO COMUNICADO</h5>
+                        <p>Nueva normativa para servicios de salud primaria - Publicado 25/05/2025</p>
+                    </div>
+                    
+                    <div class="publicidad">
+                        <h5>📊 INFORME MENSUAL</h5>
+                        <p>1,245 quejas procesadas en abril, 78% resueltas satisfactoriamente</p>
+                    </div>
+                    
+                    <div class="publicidad">
+                        <h5>🧠 CAMPAÑA SALUD MENTAL</h5>
+                        <p>Nueva campaña de sensibilización sobre atención en salud mental</p>
+                    </div>
+                    
+                    <h4 style="margin-top: 30px;">🐦 Trinos y Redes</h4>
+                    
+                    <div class="publicidad" style="background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); color: white;">
+                        <h5>🐦 @VeeduriaCoSalud</h5>
+                        <p>"Recordamos que el derecho a la salud es fundamental. Presenta tu queja aquí."</p>
+                        <small>Hace 2 horas</small>
+                    </div>
+                    
+                    <div class="publicidad" style="background: linear-gradient(135deg, #1877f2 0%, #166fe5 100%); color: white;">
+                        <h5>📘 Facebook Oficial</h5>
+                        <p>Más de 50,000 seguidores nos respaldan en la lucha por una mejor salud</p>
+                    </div>
+                    
+                    <div class="publicidad" style="background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%); color: white;">
+                        <h5>📱 Instagram</h5>
+                        <p>Síguenos para tips de salud y actualizaciones diarias</p>
+                    </div>
+                    
+                    <div class="publicidad" style="background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); color: white;">
+                        <h5>📱 WhatsApp Oficial</h5>
+                        <p>Canal de noticias: +57 300 123 4567</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let archivosAdjuntos = [];
+        
+        function showPage(pageId) {
+            // Ocultar todas las páginas
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Mostrar la página seleccionada
+            document.getElementById(pageId).classList.add('active');
+            
+            // Cargar contenido específico si es necesario
+            if (pageId === 'veedores') {
+                cargarVeedores();
+            }
+        }
+
+        async function cargarVeedores() {
+            try {
+                const veedores = await apiRequest('/api/veedores');
+                let veedoresHTML = '';
+                
+                veedores.forEach(veedor => {
+                    veedoresHTML += `
+                        <div class="veedor-item">
+                            <h5>${veedor.nombre}</h5>
+                            <p><strong>Cargo:</strong> ${veedor.cargo}</p>
+                            <p><strong>Región:</strong> ${veedor.departamento}</p>
+                            <p><strong>Teléfono:</strong> ${veedor.telefono}</p>
+                            <p><strong>Email:</strong> ${veedor.email}</p>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('veedoresContent').innerHTML = veedoresHTML;
+            } catch (error) {
+                console.error('Error cargando veedores:', error);
+                document.getElementById('veedoresContent').innerHTML = `
+                    <div class="error">Error al cargar la lista de veedores. Intente nuevamente.</div>
+                `;
+            }
+        }
+
+        async function mostrarFormularioQueja(tipo) {
+            const tipoTexto = tipo === 'primaria' ? 'Atención Primaria' : 'Atención Complementaria';
+            
+            try {
+                // Cargar departamentos y tipos de queja
+                const departamentos = await apiRequest('/api/departamentos');
+                const tiposQueja = await apiRequest(`/api/tipos-queja/${tipo}`);
+                
+                // Generar opciones
+                const departamentosOptions = departamentos.map(dep => 
+                    `<option value="${dep}">${dep}</option>`
+                ).join('');
+                
+                const tiposQuejaOptions = tiposQueja.map(tipoQ => 
+                    `<option value="${tipoQ}">${tipoQ}</option>`
+                ).join('');
+                
+                const nombreCompleto = usuarioActual ? `${usuarioActual.nombre} ${usuarioActual.apellido}` : '';
+                const cedula = usuarioActual ? usuarioActual.cedula : '';
+                const correo = usuarioActual ? usuarioActual.correo : '';
+                const celular = usuarioActual ? usuarioActual.celular : '';
+                
+                document.getElementById('quejaContent').innerHTML = `
+                    <h4>Formulario de Queja - ${tipoTexto}</h4>
+                    <form id="quejaForm" onsubmit="enviarQuejaAutorizada(event)">
+                        <input type="hidden" name="clasificacion" value="${tipo}">
+                        
+                        <div class="info-box" style="margin-bottom: 20px;">
+                            <p><strong>Datos del Usuario:</strong></p>
+                            <p>Los siguientes campos están precargados con su información de registro:</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nombre">Nombre Completo *</label>
+                            <input type="text" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cedula">Número de Cédula *</label>
+                            <input type="text" id="cedula" name="cedula" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="correo">Correo Electrónico *</label>
+                            <input type="email" id="correo" name="correo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="celular">Teléfono/Celular</label>
+                            <input type="tel" id="celular" name="celular" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tipoUsuario">Tipo de Usuario *</label>
+                            <select id="tipoUsuario" name="tipoUsuario" required>
+                                <option value="">Seleccione...</option>
+                                <option value="docente_activo">Docente Activo</option>
+                                <option value="docente_pensionado">Docente Pensionado</option>
+                                <option value="beneficiario">Beneficiario</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="problema">Tipo de Problema *</label>
+                            <select id="problema" name="problema" required>
+                                <option value="">Seleccione el tipo de problema</option>
+                                ${tiposQuejaOptions}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="detalle">Descripción Detallada *</label>
+                            <textarea id="detalle" name="detalle" required 
+                                      placeholder="Describa detalladamente su queja incluyendo fecha, lugar y personas involucradas"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="departamento">Departamento *</label>
+                            <select id="departamento" name="departamento" required>
+                                <option value="">Seleccione departamento</option>
+                                ${departamentosOptions}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ciudad">Ciudad/Municipio *</label>
+                            <select id="ciudad" name="ciudad" required disabled>
+                                <option value="">Primero seleccione departamento</option>
+                            </select>
+                            <input type="text" id="ciudadOtro" name="ciudadOtro" placeholder="Escriba el nombre del municipio" style="display: none; margin-top: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                        </div>
+                        <div class="form-group" style="border: 1px solid #ddd; padding: 15px; border-radius: 5px; background: #f9f9f9;">
+                            <h5 style="margin: 0 0 10px 0; color: #333;">Política de Tratamiento de Datos Personales</h5>
+                            <div style="max-height: 150px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: white; margin-bottom: 10px; font-size: 12px; line-height: 1.4;">
+                                <p><strong>VEEDURÍA NACIONAL DE SALUD</strong></p>
+                                <p>En cumplimiento de la Ley 1581 de 2012 y sus decretos reglamentarios, informamos:</p>
+                                <p><strong>Finalidad:</strong> Sus datos serán utilizados para procesar, gestionar y dar seguimiento a su queja de salud.</p>
+                                <p><strong>Tratamiento:</strong> Los datos serán almacenados, procesados y utilizados únicamente para atender su solicitud.</p>
+                                <p><strong>Derechos:</strong> Puede conocer, actualizar, rectificar o solicitar la supresión de sus datos contactando a la Veeduría.</p>
+                                <p><strong>Datos recolectados:</strong> Nombre, cédula, correo, teléfono, tipo de usuario y detalles de la queja.</p>
+                                <p><strong>Autorización:</strong> Al marcar la casilla siguiente, autoriza expresamente el tratamiento de sus datos personales.</p>
+                            </div>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="aceptoPolitica" name="aceptoPolitica" required style="margin-right: 8px; width: 18px; height: 18px;"> 
+                                <span style="font-weight: bold;">
+                                    He leído y acepto la política de tratamiento de datos personales *
+                                </span>
+                            </label>
+                        </div>
+                        
+                        <h5>Archivos Adjuntos (Opcional):</h5>
+                        <div class="file-upload" id="fileUpload">
+                            <p>Toque aquí para seleccionar archivos</p>
+                            <p style="font-size: 11px; color: #666;">PDF, DOC, DOCX, JPG, PNG (máx 5MB)</p>
+                            <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;">
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                        
+                        <button type="submit" class="btn">Enviar Queja</button>
+                        <button type="button" onclick="mostrarSeleccionTipo()" class="btn btn-secondary">Cancelar</button>
+                        <div id="quejaMessage"></div>
+                    </form>
+                `;
+                
+                // Configurar eventos
+                configurarEventosFormulario();
+            } catch (error) {
+                console.error('Error cargando formulario:', error);
+                document.getElementById('quejaContent').innerHTML = `
+                    <div class="error">Error al cargar el formulario. Intente nuevamente.</div>
+                    <button onclick="mostrarSeleccionTipo()" class="btn">Volver</button>
+                `;
+            }
+        }
+
+        function mostrarSeleccionTipo() {
+            document.getElementById('quejaContent').innerHTML = `
+                <div class="info-box">
+                    <p><strong>Seleccione el tipo de atención para su queja:</strong></p>
+                    <p>• <strong>Atención Primaria:</strong> Consultas generales, odontología básica, vacunación</p>
+                    <p>• <strong>Atención Complementaria:</strong> Especialistas, cirugías, terapias</p>
+                </div>
+                <button onclick="mostrarFormularioQueja('primaria')" class="btn">Atención Primaria</button>
+                <button onclick="mostrarFormularioQueja('complementaria')" class="btn">Atención Complementaria</button>
+            `;
+        }
+
+        function configurarEventosFormulario() {
+            // Configurar el evento de cambio de departamento
+            document.getElementById('departamento').addEventListener('change', async (e) => {
+                const departamento = e.target.value;
+                const ciudadSelect = document.getElementById('ciudad');
+                
+                if (departamento) {
+                    try {
+                        const municipios = await apiRequest(`/api/municipios/${encodeURIComponent(departamento)}`);
+                        
+                        ciudadSelect.innerHTML = '<option value="">Seleccione municipio</option>';
+                        ciudadSelect.disabled = false;
+                        
+                        municipios.forEach(municipio => {
+                            ciudadSelect.innerHTML += `<option value="${municipio}">${municipio}</option>`;
+                        });
+                        
+                        // Agregar opción "Otro"
+                        ciudadSelect.innerHTML += `<option value="otro">Otro (especificar)</option>`;
+                        
+                        // Configurar evento para mostrar campo de texto cuando se selecciona "Otro"
+                        ciudadSelect.addEventListener('change', function() {
+                            const ciudadOtroInput = document.getElementById('ciudadOtro');
+                            if (this.value === 'otro') {
+                                ciudadOtroInput.style.display = 'block';
+                                ciudadOtroInput.required = true;
+                                this.required = false;
+                            } else {
+                                ciudadOtroInput.style.display = 'none';
+                                ciudadOtroInput.required = false;
+                                this.required = true;
+                                ciudadOtroInput.value = '';
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error cargando municipios:', error);
+                        ciudadSelect.innerHTML = '<option value="">Error cargando municipios</option>';
+                    }
+                } else {
+                    ciudadSelect.innerHTML = '<option value="">Primero seleccione departamento</option>';
+                    ciudadSelect.disabled = true;
+                }
+            });
+
+            // Configurar manejo de archivos
+            const fileUpload = document.getElementById('fileUpload');
+            const fileInput = document.getElementById('fileInput');
+            
+            fileUpload.addEventListener('click', () => fileInput.click());
+            fileUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUpload.classList.add('dragover');
+            });
+            fileUpload.addEventListener('dragleave', () => {
+                fileUpload.classList.remove('dragover');
+            });
+            fileUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUpload.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            // Configurar envío del formulario
+            document.getElementById('quejaForm').addEventListener('submit', async (e) => {
+                await enviarQuejaAutorizada(e);
+            });
+        }
+
+        function handleFiles(files) {
+            for (let file of files) {
+                if (validateFile(file)) {
+                    archivosAdjuntos.push(file);
+                    updateFileList();
+                }
+            }
+        }
+
+        function validateFile(file) {
+            const allowedTypes = ['application/pdf', 'application/msword', 
+                                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                 'image/jpeg', 'image/jpg', 'image/png'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            if (!allowedTypes.includes(file.type)) {
+                alert('Tipo de archivo no permitido: ' + file.name);
+                return false;
+            }
+            if (file.size > maxSize) {
+                alert('El archivo es muy grande (máximo 5MB): ' + file.name);
+                return false;
+            }
+            return true;
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            archivosAdjuntos.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                    <button onclick="removeFile(${index})">Eliminar</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index) {
+            archivosAdjuntos.splice(index, 1);
+            updateFileList();
+        }
+
+        // Sistema de filtros de contenido inapropiado
+        function validarContenidoQueja(problema, detalle) {
+            const palabrasOfensivas = [
+                "idiota", "estúpido", "estupido", "imbécil", "imbecil", "tonto",
+                "inútil", "inutil", "incompetente", "basura", "maldito", "maldita",
+                "pendejo", "pendeja", "hijo de", "hijode", "marica", "maricas", "maricón", "maricon",
+                "puta", "puto", "putita", "putilla", "cabron", "cabrón", "gonorrea", "gonorreita",
+                "carajo", "culo", "culero", "culera", "mierda", "jodido", "jodida",
+                "inepto", "inepta", "ineptos", "ineptas", "vieja", "viejo", "viejas", "viejos",
+                "chismosa", "chismoso", "mediquillos", "mediquillo", "mediquilla", "mediquetes",
+                "perro", "perra", "animal", "bestia", "bruto", "bruta", "burro", "burra",
+                "malo", "mala", "malos", "malas", "porquería", "porqueria", "lacra", "rastrero",
+                "asqueroso", "asquerosa", "maltratador", "maltratadora", "doctorcito", "doctorcitos",
+                "medicastro", "medicastros", "matasanos", "matasano", "charlatán", "charlatana"
+            ];
+            
+            const expresionesProblematicas = [
+                /\b(vieja|viejo)\b.*?\b(médica|médico|enfermera|enfermero|doctor|doctora)\b/gi,
+                /\b(no sabe|no saben)\b.*?\b(nada|hacer|trabajar|atender)\b/gi,
+                /\b(título|títulos)\b.*?\b(regalado|regalados|comprado|comprados)\b/gi,
+                /\b(tratan|trataron).*?\b(como)\b.*?\b(perro|perros|animal|animales)\b/gi,
+                /\besa\s+(vieja|viejo)\b/gi
+            ];
+            
+            const textoCompleto = `${problema} ${detalle}`.toLowerCase();
+            const erroresEncontrados = [];
+            let sugerencia = `${problema} ${detalle}`;
+            
+            // Verificar palabras ofensivas
+            for (const palabra of palabrasOfensivas) {
+                const regex = new RegExp(`\\b${palabra.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+                if (regex.test(textoCompleto)) {
+                    erroresEncontrados.push(`Lenguaje inapropiado: "${palabra}"`);
+                    sugerencia = sugerencia.replace(regex, '[término apropiado]');
+                }
+            }
+            
+            // Verificar expresiones problemáticas
+            for (const expresion of expresionesProblematicas) {
+                if (expresion.test(textoCompleto)) {
+                    erroresEncontrados.push('Expresión despectiva hacia profesionales de salud');
+                    sugerencia = sugerencia.replace(expresion, '[expresión respetuosa]');
+                }
+            }
+            
+            // Casos específicos de mejora
+            if (textoCompleto.includes('esa vieja') && textoCompleto.includes('médica')) {
+                erroresEncontrados.push('Expresión despectiva por edad y género');
+                sugerencia = 'Me siento insatisfecho con la atención recibida por parte de la profesional médica.';
+            }
+            
+            if (textoCompleto.includes('mediquillos') || textoCompleto.includes('mediquillo')) {
+                erroresEncontrados.push('Término despectivo hacia profesionales médicos');
+                sugerencia = 'No estoy satisfecho con el trato recibido por parte del personal médico.';
+            }
+            
+            if (textoCompleto.includes('como a perro') || textoCompleto.includes('como perro')) {
+                erroresEncontrados.push('Comparación despectiva sobre trato recibido');
+                sugerencia = 'Considero que el trato recibido careció de calidez humana.';
+            }
+            
+            return {
+                esValido: erroresEncontrados.length === 0,
+                errores: erroresEncontrados,
+                sugerencia: sugerencia
+            };
+        }
+
+        async function enviarQueja(e) {
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            data.paraBeneficiario = document.querySelector('input[name="paraBeneficiario"]').checked;
+            
+            // Validar contenido antes de enviar
+            const validacion = validarContenidoQueja(data.problema, data.detalle);
+            const messageDiv = document.getElementById('quejaMessage');
+            
+            if (!validacion.esValido) {
+                const errores = validacion.errores.join('<br>• ');
+                messageDiv.innerHTML = `
+                    <div class="error">
+                        <strong>Contenido no apropiado detectado:</strong><br>
+                        • ${errores}<br><br>
+                        <strong>Sugerencia de mejora:</strong><br>
+                        "${validacion.sugerencia}"<br><br>
+                        <em>Por favor, reformule su mensaje de manera respetuosa y constructiva para una mejor atención a su caso.</em>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Crear FormData para envío con archivos
+            const submitFormData = new FormData(e.target);
+            submitFormData.set('paraBeneficiario', data.paraBeneficiario);
+            
+            // Agregar archivos adjuntos
+            if (archivosAdjuntos.length > 0) {
+                archivosAdjuntos.forEach(file => {
+                    submitFormData.append('soporte', file);
+                });
+            }
+            
+            try {
+                const result = await fetch('/api/quejas', {
+                    method: 'POST',
+                    body: submitFormData
+                }).then(res => res.json());
+                
+                if (result.success) {
+                    const mensaje = result.mensaje || 'Queja registrada exitosamente';
+                    messageDiv.innerHTML = `<div class="success">${mensaje}</div>`;
+                    e.target.reset();
+                    archivosAdjuntos = [];
+                    updateFileList();
+                } else {
+                    let errorMessage = result.error || 'Error al registrar la queja';
+                    if (result.sugerencia) {
+                        errorMessage += `<br><br><strong>Sugerencia:</strong><br>${result.sugerencia}`;
+                    }
+                    if (result.mensaje) {
+                        errorMessage += `<br><br><em>${result.mensaje}</em>`;
+                    }
+                    messageDiv.innerHTML = `<div class="error">${errorMessage}</div>`;
+                }
+            } catch (error) {
+                console.error('Error enviando queja:', error);
+                messageDiv.innerHTML = `<div class="error">Error de conexión. Intente nuevamente.</div>`;
+            }
+        }
+
+        // Variables globales para sesión de usuario
+        let usuarioActual = null;
+
+        // Función para registrar usuario
+        async function registrarUsuario(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            // Validar confirmación de contraseña
+            if (data.clave !== data.confirmarClave) {
+                document.getElementById('registroMessage').innerHTML = '<div class="error">Las contraseñas no coinciden</div>';
+                return;
+            }
+            
+            // Remover confirmación de contraseña del envío
+            delete data.confirmarClave;
+            
+            try {
+                const result = await apiRequest('/api/register', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                const messageDiv = document.getElementById('registroMessage');
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success">Usuario registrado exitosamente. Puede ingresar al sistema.</div>';
+                    setTimeout(() => {
+                        showPage('login');
+                    }, 2000);
+                } else {
+                    messageDiv.innerHTML = `<div class="error">${result.error || 'Error al registrar usuario'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error registrando usuario:', error);
+                document.getElementById('registroMessage').innerHTML = '<div class="error">Error de conexión. Intente nuevamente.</div>';
+            }
+        }
+
+        // Función para hacer login
+        async function loginUsuario(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const result = await apiRequest('/api/login', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                const messageDiv = document.getElementById('loginMessage');
+                if (result.success) {
+                    usuarioActual = result.usuario;
+                    actualizarInfoUsuario();
+                    showPage('sistema-autorizado');
+                    cargarMisQuejas();
+                } else {
+                    messageDiv.innerHTML = `<div class="error">${result.error || 'Error al iniciar sesión'}</div>`;
+                }
+            } catch (error) {
+                console.error('Error en login:', error);
+                document.getElementById('loginMessage').innerHTML = '<div class="error">Error de conexión. Intente nuevamente.</div>';
+            }
+        }
+
+        // Función para actualizar información del usuario en pantalla
+        function actualizarInfoUsuario() {
+            if (usuarioActual) {
+                const tipoUsuarioLabel = {
+                    'docente_activo': 'Docente Activo',
+                    'docente_pensionado': 'Docente Pensionado',
+                    'beneficiario': 'Beneficiario'
+                };
+                
+                document.getElementById('usuarioInfo').textContent = 
+                    `Bienvenido/a ${usuarioActual.nombre} ${usuarioActual.apellido} - ${tipoUsuarioLabel[usuarioActual.tipoUsuario]}`;
+            }
+        }
+
+        // Función para cargar las quejas del usuario
+        async function cargarMisQuejas() {
+            if (!usuarioActual) return;
+            
+            try {
+                const result = await apiRequest(`/api/quejas/${usuarioActual.id}`);
+                const listadoDiv = document.getElementById('listadoQuejas');
+                
+                if (result.quejas && result.quejas.length > 0) {
+                    let html = '';
+                    result.quejas.forEach(queja => {
+                        const fecha = new Date(queja.fechaCreacion).toLocaleDateString('es-CO');
+                        html += `
+                            <div class="veedor-item">
+                                <h5>Queja #${queja.id} - ${queja.problema}</h5>
+                                <p><strong>Detalle:</strong> ${queja.detalle}</p>
+                                <p><strong>Ciudad:</strong> ${queja.ciudad}, ${queja.departamento}</p>
+                                <p><strong>Clasificación:</strong> ${queja.clasificacion}</p>
+                                <p><strong>Estado:</strong> ${queja.estado}</p>
+                                <p><strong>Fecha:</strong> ${fecha}</p>
+                            </div>
+                        `;
+                    });
+                    listadoDiv.innerHTML = html;
+                } else {
+                    listadoDiv.innerHTML = '<div class="info-box"><p>No ha registrado quejas aún.</p></div>';
+                }
+            } catch (error) {
+                console.error('Error cargando quejas:', error);
+                document.getElementById('listadoQuejas').innerHTML = '<div class="error">Error al cargar las quejas</div>';
+            }
+        }
+
+        // Función para cerrar sesión
+        function cerrarSesion() {
+            if (confirm('¿Está seguro que desea cerrar sesión?')) {
+                usuarioActual = null;
+                showPage('inicio');
+                // Limpiar formularios
+                document.querySelectorAll('form').forEach(form => form.reset());
+                document.querySelectorAll('.error, .success').forEach(msg => msg.remove());
+            }
+        }
+
+        // Función para enviar queja con validación de política de datos
+        async function enviarQuejaAutorizada(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            // Validar que se haya aceptado la política de datos
+            const aceptoPolitica = document.querySelector('input[name="aceptoPolitica"]').checked;
+            if (!aceptoPolitica) {
+                const messageDiv = document.getElementById('quejaMessage');
+                messageDiv.innerHTML = `
+                    <div class="error">
+                        <strong>Política de Datos Requerida</strong><br>
+                        Debe aceptar la política de tratamiento de datos personales para continuar con el envío de su queja.
+                    </div>
+                `;
+                return;
+            }
+            
+            data.aceptoPolitica = aceptoPolitica;
+            data.tipoUsuario = document.querySelector('select[name="tipoUsuario"]').value;
+            
+            // Manejar municipio personalizado si se seleccionó "Otro"
+            const ciudadSelect = document.querySelector('select[name="ciudad"]');
+            const ciudadOtroInput = document.querySelector('input[name="ciudadOtro"]');
+            
+            if (ciudadSelect.value === 'otro' && ciudadOtroInput.value.trim()) {
+                data.ciudad = ciudadOtroInput.value.trim();
+            }
+            
+            // Validar contenido antes de enviar
+            const validacion = validarContenidoQueja(data.problema, data.detalle);
+            const messageDiv = document.getElementById('quejaMessage');
+            
+            if (!validacion.esValido) {
+                const errores = validacion.errores.join('<br>• ');
+                messageDiv.innerHTML = `
+                    <div class="error">
+                        <strong>Contenido no apropiado detectado:</strong><br>
+                        • ${errores}<br><br>
+                        <strong>Sugerencia de mejora:</strong><br>
+                        "${validacion.sugerencia}"<br><br>
+                        <em>Por favor, reformule su mensaje de manera respetuosa y constructiva para una mejor atención a su caso.</em>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Crear FormData para envío con archivos
+            const submitFormData = new FormData(e.target);
+            submitFormData.set('aceptoPolitica', aceptoPolitica);
+            submitFormData.set('tipoUsuario', data.tipoUsuario);
+            
+            // Manejar municipio personalizado
+            if (ciudadSelect.value === 'otro' && ciudadOtroInput.value.trim()) {
+                submitFormData.set('ciudad', ciudadOtroInput.value.trim());
+            }
+            
+            // Agregar archivos adjuntos
+            if (archivosAdjuntos.length > 0) {
+                archivosAdjuntos.forEach(file => {
+                    submitFormData.append('soporte', file);
+                });
+            }
+            
+            try {
+                const result = await fetch('/api/quejas', {
+                    method: 'POST',
+                    body: submitFormData
+                }).then(res => res.json());
+                
+                if (result.success) {
+                    const mensaje = result.mensaje || 'Queja registrada exitosamente';
+                    messageDiv.innerHTML = `<div class="success">${mensaje}</div>`;
+                    e.target.reset();
+                    archivosAdjuntos = [];
+                    updateFileList();
+                    // Actualizar lista de quejas
+                    cargarMisQuejas();
+                } else {
+                    let errorMessage = result.error || 'Error al registrar la queja';
+                    if (result.sugerencia) {
+                        errorMessage += `<br><br><strong>Sugerencia:</strong><br>${result.sugerencia}`;
+                    }
+                    if (result.mensaje) {
+                        errorMessage += `<br><br><em>${result.mensaje}</em>`;
+                    }
+                    messageDiv.innerHTML = `<div class="error">${errorMessage}</div>`;
+                }
+            } catch (error) {
+                console.error('Error enviando queja:', error);
+                messageDiv.innerHTML = `<div class="error">Error de conexión. Intente nuevamente.</div>`;
+            }
+        }
+
+        function cerrarApp() {
+            if (confirm('¿Está seguro que desea salir del sistema?')) {
+                window.close();
+            }
+        }
+
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('Error en la petición:', error);
+                return { error: 'Error de conexión con el servidor' };
+            }
+        }
+    </script>
+</body>
+</html>
