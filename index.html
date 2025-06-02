@@ -905,7 +905,12 @@
                             <select id="problema" name="problema" required>
                                 <option value="">Seleccione el tipo de problema</option>
                                 ${tiposQuejaOptions}
+                                <option value="otro">Otro (especificar)</option>
                             </select>
+                        </div>
+                        <div class="form-group" id="problemaOtroGroup" style="display: none;">
+                            <label for="problemaOtro">Especifique el tipo de problema *</label>
+                            <input type="text" id="problemaOtro" name="problemaOtro" placeholder="Describa el tipo de problema específico">
                         </div>
                         <div class="form-group">
                             <label for="detalle">Descripción Detallada *</label>
@@ -985,6 +990,23 @@
         }
 
         function configurarEventosFormulario() {
+            // Configurar el evento de cambio de tipo de problema
+            document.getElementById('problema').addEventListener('change', function() {
+                const problemaOtroGroup = document.getElementById('problemaOtroGroup');
+                const problemaOtroInput = document.getElementById('problemaOtro');
+                
+                if (this.value === 'otro') {
+                    problemaOtroGroup.style.display = 'block';
+                    problemaOtroInput.required = true;
+                    this.required = false;
+                } else {
+                    problemaOtroGroup.style.display = 'none';
+                    problemaOtroInput.required = false;
+                    problemaOtroInput.value = '';
+                    this.required = true;
+                }
+            });
+            
             // Configurar el evento de cambio de departamento
             document.getElementById('departamento').addEventListener('change', async (e) => {
                 const departamento = e.target.value;
@@ -1193,9 +1215,22 @@
                 return;
             }
             
+            // Manejar tipo de problema personalizado si se seleccionó "Otro"
+            const problemaSelect = document.querySelector('select[name="problema"]');
+            const problemaOtroInput = document.querySelector('input[name="problemaOtro"]');
+            
+            if (problemaSelect.value === 'otro' && problemaOtroInput.value.trim()) {
+                data.problema = problemaOtroInput.value.trim();
+            }
+            
             // Crear FormData para envío con archivos
             const submitFormData = new FormData(e.target);
             submitFormData.set('paraBeneficiario', data.paraBeneficiario);
+            
+            // Establecer el problema correcto (personalizado si es "otro")
+            if (problemaSelect.value === 'otro' && problemaOtroInput.value.trim()) {
+                submitFormData.set('problema', problemaOtroInput.value.trim());
+            }
             
             // Agregar archivos adjuntos
             if (archivosAdjuntos.length > 0) {
@@ -1408,6 +1443,14 @@
             const submitFormData = new FormData(e.target);
             submitFormData.set('aceptoPolitica', aceptoPolitica);
             submitFormData.set('tipoUsuario', data.tipoUsuario);
+            
+            // Manejar tipo de problema personalizado si se seleccionó "Otro"
+            const problemaSelect = document.querySelector('select[name="problema"]');
+            const problemaOtroInput = document.querySelector('input[name="problemaOtro"]');
+            
+            if (problemaSelect.value === 'otro' && problemaOtroInput.value.trim()) {
+                submitFormData.set('problema', problemaOtroInput.value.trim());
+            }
             
             // Manejar municipio personalizado
             if (ciudadSelect.value === 'otro' && ciudadOtroInput.value.trim()) {
