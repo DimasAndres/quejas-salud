@@ -564,60 +564,17 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Obtener información de veedores
+  // Obtener información de veedores (usa datos dinámicos del panel administrativo)
   if (pathname === '/api/veedores' && method === 'GET') {
-    const veedores = [
-      {
-        nombre: "Dr. Juan Carlos Pérez",
-        cargo: "Veedor Nacional de Salud",
-        departamento: "Nacional",
-        telefono: "+57 1 234 5678",
-        email: "juan.perez@veeduria.gov.co"
-      },
-      {
-        nombre: "Dra. María Elena Rodríguez",
-        cargo: "Veedora Regional Caribe",
-        departamento: "Atlántico, Bolívar, Cesar, Córdoba, La Guajira, Magdalena, Sucre",
-        telefono: "+57 5 987 6543",
-        email: "maria.rodriguez@veeduria.gov.co"
-      },
-      {
-        nombre: "Dr. Carlos Andrés Gómez",
-        cargo: "Veedor Regional Pacífico",
-        departamento: "Chocó, Nariño, Valle del Cauca, Cauca",
-        telefono: "+57 2 456 7890",
-        email: "carlos.gomez@veeduria.gov.co"
-      },
-      {
-        nombre: "Dra. Ana Sofía Martínez",
-        cargo: "Veedora Regional Andina",
-        departamento: "Antioquia, Boyacá, Caldas, Cundinamarca, Huila, Quindío, Risaralda, Santander, Tolima",
-        telefono: "+57 4 321 0987",
-        email: "ana.martinez@veeduria.gov.co"
-      },
-      {
-        nombre: "Dr. Luis Fernando Torres",
-        cargo: "Veedor Regional Oriental",
-        departamento: "Arauca, Casanare, Meta, Norte de Santander, Vichada",
-        telefono: "+57 7 654 3210",
-        email: "luis.torres@veeduria.gov.co"
-      },
-      {
-        nombre: "Dra. Patricia Ramírez",
-        cargo: "Veedora Regional Amazónica",
-        departamento: "Amazonas, Caquetá, Guainía, Guaviare, Putumayo, Vaupés",
-        telefono: "+57 8 789 0123",
-        email: "patricia.ramirez@veeduria.gov.co"
-      },
-      {
-        nombre: "Ing. Dimas",
-        cargo: "Veedor Departamental Amazonas",
-        departamento: "Amazonas",
-        telefono: "+57 8 456 7890",
-        email: "ingenierodimas@gmail.com"
-      }
-    ];
-    sendJSON(res, 200, veedores);
+    // Formatear los datos para la vista pública, usando email en lugar de correo
+    const veedoresPublicos = veedoresData.map(veedor => ({
+      nombre: veedor.nombre,
+      cargo: veedor.cargo,
+      departamento: veedor.departamento,
+      telefono: veedor.telefono,
+      email: veedor.correo // Mapear correo a email para compatibilidad
+    }));
+    sendJSON(res, 200, veedoresPublicos);
     return;
   }
 
