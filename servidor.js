@@ -40,7 +40,64 @@ let peticionesRecientes = new Set();
 
 // Almacenamiento para administración
 let destinatariosConfig = {};
-let veedoresData = [];
+let veedoresData = [
+  {
+    nombre: "Dr. Juan Carlos Pérez",
+    cargo: "Veedor Nacional de Salud",
+    departamento: "Nacional",
+    telefono: "+57 1 234 5678",
+    correo: "juan.perez@veeduria.gov.co",
+    cedula: "12345678"
+  },
+  {
+    nombre: "Dra. María Elena Rodríguez",
+    cargo: "Veedora Regional Caribe",
+    departamento: "Atlántico",
+    telefono: "+57 5 987 6543",
+    correo: "maria.rodriguez@veeduria.gov.co",
+    cedula: "23456789"
+  },
+  {
+    nombre: "Dr. Carlos Andrés Gómez",
+    cargo: "Veedor Regional Pacífico",
+    departamento: "Valle del Cauca",
+    telefono: "+57 2 456 7890",
+    correo: "carlos.gomez@veeduria.gov.co",
+    cedula: "34567890"
+  },
+  {
+    nombre: "Dra. Ana Sofía Martínez",
+    cargo: "Veedora Regional Andina",
+    departamento: "Antioquia",
+    telefono: "+57 4 321 0987",
+    correo: "ana.martinez@veeduria.gov.co",
+    cedula: "45678901"
+  },
+  {
+    nombre: "Dr. Luis Fernando Torres",
+    cargo: "Veedor Regional Oriental",
+    departamento: "Norte de Santander",
+    telefono: "+57 7 654 3210",
+    correo: "luis.torres@veeduria.gov.co",
+    cedula: "56789012"
+  },
+  {
+    nombre: "Dra. Patricia Ramírez",
+    cargo: "Veedora Regional Amazónica",
+    departamento: "Amazonas",
+    telefono: "+57 8 789 0123",
+    correo: "patricia.ramirez@veeduria.gov.co",
+    cedula: "67890123"
+  },
+  {
+    nombre: "Ing. Dimas",
+    cargo: "Veedor Departamental Amazonas",
+    departamento: "Amazonas",
+    telefono: "+57 8 456 7890",
+    correo: "ingenierodimas@gmail.com",
+    cedula: "78901234"
+  }
+];
 
 // Datos de configuración
 const DEPARTAMENTOS = {
