@@ -38,6 +38,10 @@ let nextQuejaId = 1;
 // Control de peticiones duplicadas
 let peticionesRecientes = new Set();
 
+// Almacenamiento para administración
+let destinatariosConfig = {};
+let veedoresData = [];
+
 // Datos de configuración
 const DEPARTAMENTOS = {
     "Amazonas": ["Leticia", "Puerto Nariño"],
@@ -557,6 +561,73 @@ const server = http.createServer(async (req, res) => {
       }
     ];
     sendJSON(res, 200, veedores);
+    return;
+  }
+
+  // Panel administrativo
+  if (pathname === '/admin' || pathname === '/admin.html') {
+    serveFile(res, 'admin.html');
+    return;
+  }
+
+  // API Administrativa - Destinatarios
+  if (pathname === '/api/admin/destinatarios' && method === 'GET') {
+    sendJSON(res, 200, { success: true, destinatarios: destinatariosConfig });
+    return;
+  }
+
+  if (pathname === '/api/admin/destinatarios' && method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      const { departamento, principal, copia, responsable } = body;
+      
+      destinatariosConfig[departamento] = { principal, copia, responsable };
+      sendJSON(res, 200, { success: true, mensaje: 'Destinatarios guardados' });
+    } catch (error) {
+      sendJSON(res, 500, { success: false, error: 'Error al guardar destinatarios' });
+    }
+    return;
+  }
+
+  if (pathname.startsWith('/api/admin/destinatarios/') && method === 'DELETE') {
+    const departamento = decodeURIComponent(pathname.split('/')[4]);
+    delete destinatariosConfig[departamento];
+    sendJSON(res, 200, { success: true, mensaje: 'Destinatarios eliminados' });
+    return;
+  }
+
+  // API Administrativa - Veedores
+  if (pathname === '/api/admin/veedores' && method === 'GET') {
+    sendJSON(res, 200, { success: true, veedores: veedoresData });
+    return;
+  }
+
+  if (pathname === '/api/admin/veedores' && method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      const { departamento, nombre, cedula, correo, telefono, cargo } = body;
+      
+      // Buscar si ya existe (para actualizar)
+      const existingIndex = veedoresData.findIndex(v => v.cedula === cedula);
+      const veedorData = { departamento, nombre, cedula, correo, telefono, cargo };
+      
+      if (existingIndex >= 0) {
+        veedoresData[existingIndex] = veedorData;
+      } else {
+        veedoresData.push(veedorData);
+      }
+      
+      sendJSON(res, 200, { success: true, mensaje: 'Veedor guardado' });
+    } catch (error) {
+      sendJSON(res, 500, { success: false, error: 'Error al guardar veedor' });
+    }
+    return;
+  }
+
+  if (pathname.startsWith('/api/admin/veedores/') && method === 'DELETE') {
+    const cedula = pathname.split('/')[4];
+    veedoresData = veedoresData.filter(v => v.cedula !== cedula);
+    sendJSON(res, 200, { success: true, mensaje: 'Veedor eliminado' });
     return;
   }
 

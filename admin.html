@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - Veeduría Nacional de Salud</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(44, 85, 48, 0.3);
+        }
+        .admin-nav {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background: linear-gradient(135deg, #4a7c59 0%, #2c5530 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 124, 89, 0.4);
+        }
+        .nav-btn.active {
+            background: linear-gradient(135deg, #6c7ae0 0%, #4834d4 100%);
+        }
+        .admin-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4a7c59;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+        }
+        .btn {
+            background: linear-gradient(135deg, #4a7c59 0%, #2c5530 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 124, 89, 0.4);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+        .btn-danger:hover {
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+        .destinatarios-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .destinatario-card {
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        .destinatario-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .destinatario-name {
+            font-weight: bold;
+            color: #2c5530;
+            font-size: 16px;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c5530;
+        }
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        @media (max-width: 768px) {
+            .nav-buttons {
+                flex-direction: column;
+            }
+            .nav-btn {
+                width: 100%;
+            }
+            .destinatario-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1>Panel Administrativo</h1>
+            <h2>Veeduría Nacional por el Derecho a la Salud del Magisterio</h2>
+        </div>
+
+        <div class="admin-nav">
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showSection('destinatarios')">Gestionar Destinatarios</button>
+                <button class="nav-btn" onclick="showSection('veedores')">Gestionar Veedores</button>
+                <button class="nav-btn" onclick="showSection('configuracion')">Configuración General</button>
+                <button class="nav-btn" onclick="window.location.href='/'">Volver al Sistema</button>
+            </div>
+        </div>
+
+        <div class="admin-panel">
+            <div id="messageArea"></div>
+
+            <!-- Sección Destinatarios -->
+            <div id="destinatarios" class="section active">
+                <h3>Gestión de Destinatarios por Departamento</h3>
+                <p>Administra los correos electrónicos de las autoridades de salud por departamento.</p>
+
+                <div class="form-group">
+                    <label for="departamentoSelect">Seleccionar Departamento:</label>
+                    <select id="departamentoSelect" onchange="loadDestinatarios()">
+                        <option value="">Seleccione un departamento</option>
+                    </select>
+                </div>
+
+                <div id="destinatarioForm" style="display: none;">
+                    <h4>Configurar Destinatarios</h4>
+                    <form id="destinatariosForm">
+                        <div class="form-group">
+                            <label for="correoPrincipal">Correo Principal *</label>
+                            <input type="email" id="correoP rincipal" name="principal" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="correosCopia">Correos con Copia (separados por comas)</label>
+                            <textarea id="correosCopia" name="copia" rows="3" placeholder="correo1@ejemplo.com, correo2@ejemplo.com"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="responsable">Nombre de la Entidad Responsable *</label>
+                            <input type="text" id="responsable" name="responsable" required>
+                        </div>
+                        <button type="submit" class="btn">Guardar Destinatarios</button>
+                        <button type="button" class="btn btn-danger" onclick="eliminarDestinatarios()">Eliminar Configuración</button>
+                    </form>
+                </div>
+
+                <div id="destinatariosList" class="destinatarios-list"></div>
+            </div>
+
+            <!-- Sección Veedores -->
+            <div id="veedores" class="section">
+                <h3>Gestión de Veedores</h3>
+                <p>Administra la información de los veedores por departamento y región.</p>
+
+                <form id="veedorForm">
+                    <div class="form-group">
+                        <label for="veedorDepartamento">Departamento *</label>
+                        <select id="veedorDepartamento" name="departamento" required>
+                            <option value="">Seleccione departamento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="veedorNombre">Nombre Completo *</label>
+                        <input type="text" id="veedorNombre" name="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="veedorCedula">Número de Cédula *</label>
+                        <input type="text" id="veedorCedula" name="cedula" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="veedorCorreo">Correo Electrónico *</label>
+                        <input type="email" id="veedorCorreo" name="correo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="veedorTelefono">Teléfono</label>
+                        <input type="tel" id="veedorTelefono" name="telefono">
+                    </div>
+                    <div class="form-group">
+                        <label for="veedorCargo">Cargo/Responsabilidad</label>
+                        <input type="text" id="veedorCargo" name="cargo">
+                    </div>
+                    <button type="submit" class="btn">Agregar/Actualizar Veedor</button>
+                    <button type="button" class="btn btn-danger" onclick="limpiarFormularioVeedor()">Limpiar</button>
+                </form>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Departamento</th>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Teléfono</th>
+                            <th>Cargo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="veedoresTable">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sección Configuración -->
+            <div id="configuracion" class="section">
+                <h3>Configuración General</h3>
+                <p>Configuraciones globales del sistema.</p>
+
+                <h4>Configuración de Correo</h4>
+                <form id="configCorreoForm">
+                    <div class="form-group">
+                        <label for="emailRemetente">Correo Remitente</label>
+                        <input type="email" id="emailRemetente" name="emailRemetente">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailPassword">Contraseña de Aplicación</label>
+                        <input type="password" id="emailPassword" name="emailPassword">
+                    </div>
+                    <button type="submit" class="btn">Guardar Configuración</button>
+                </form>
+
+                <h4>Formulario de Google</h4>
+                <form id="configGoogleForm">
+                    <div class="form-group">
+                        <label for="formularioUrl">URL del Formulario Google</label>
+                        <input type="url" id="formularioUrl" name="formularioUrl">
+                    </div>
+                    <div class="form-group">
+                        <label for="formularioActivo">Estado del Formulario</label>
+                        <select id="formularioActivo" name="activo">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Guardar Configuración</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de departamentos
+        const DEPARTAMENTOS = {
+            "Amazonas": ["Leticia", "Puerto Nariño"],
+            "Antioquia": ["Medellín", "Bello", "Itagüí", "Envigado", "Apartadó", "Turbo"],
+            "Arauca": ["Arauca", "Tame", "Saravena", "Fortul"],
+            "Atlántico": ["Barranquilla", "Soledad", "Malambo", "Sabanagrande"],
+            "Bogotá D.C.": ["Bogotá D.C."],
+            "Bolívar": ["Cartagena", "Magangué", "Turbaco", "Arjona"],
+            "Boyacá": ["Tunja", "Duitama", "Sogamoso", "Chiquinquirá"],
+            "Caldas": ["Manizales", "Villamaría", "Chinchiná", "La Dorada"],
+            "Caquetá": ["Florencia", "San Vicente del Caguán", "Puerto Rico"],
+            "Casanare": ["Yopal", "Aguazul", "Villanueva", "Tauramena"],
+            "Cauca": ["Popayán", "Santander de Quilichao", "Puerto Tejada"],
+            "Cesar": ["Valledupar", "Aguachica", "Codazzi", "Bosconia"],
+            "Chocó": ["Quibdó", "Istmina", "Condoto", "Tadó"],
+            "Córdoba": ["Montería", "Cereté", "Sahagún", "Lorica"],
+            "Cundinamarca": ["Soacha", "Girardot", "Zipaquirá", "Facatativá"],
+            "Guainía": ["Inírida", "Barranco Minas"],
+            "Guaviare": ["San José del Guaviare", "Calamar"],
+            "Huila": ["Neiva", "Pitalito", "Garzón", "La Plata"],
+            "La Guajira": ["Riohacha", "Maicao", "Uribia", "Manaure"],
+            "Magdalena": ["Santa Marta", "Ciénaga", "Fundación"],
+            "Meta": ["Villavicencio", "Acacías", "Granada", "San Martín"],
+            "Nariño": ["Pasto", "Tumaco", "Ipiales", "Túquerres"],
+            "Norte de Santander": ["Cúcuta", "Ocaña", "Villa del Rosario"],
+            "Putumayo": ["Mocoa", "Puerto Asís", "Orito"],
+            "Quindío": ["Armenia", "Calarcá", "La Tebaida"],
+            "Risaralda": ["Pereira", "Dosquebradas", "Santa Rosa de Cabal"],
+            "San Andrés": ["San Andrés", "Providencia"],
+            "Santander": ["Bucaramanga", "Floridablanca", "Girón"],
+            "Sucre": ["Sincelejo", "Corozal", "Sampués"],
+            "Tolima": ["Ibagué", "Espinal", "Melgar", "Honda"],
+            "Valle del Cauca": ["Cali", "Palmira", "Buenaventura"],
+            "Vaupés": ["Mitú", "Carurú"],
+            "Vichada": ["Puerto Carreño", "La Primavera"]
+        };
+
+        let currentDestinatarios = {};
+        let currentVeedores = [];
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDepartments();
+            loadAllData();
+        });
+
+        function initializeDepartments() {
+            const selects = ['departamentoSelect', 'veedorDepartamento'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                Object.keys(DEPARTAMENTOS).forEach(dept => {
+                    const option = document.createElement('option');
+                    option.value = dept;
+                    option.textContent = dept;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function showSection(sectionName) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remover clase active de todos los botones
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Activar botón correspondiente
+            event.target.classList.add('active');
+        }
+
+        function loadDestinatarios() {
+            const departamento = document.getElementById('departamentoSelect').value;
+            const form = document.getElementById('destinatarioForm');
+            
+            if (!departamento) {
+                form.style.display = 'none';
+                return;
+            }
+            
+            form.style.display = 'block';
+            
+            // Cargar datos existentes si los hay
+            if (currentDestinatarios[departamento]) {
+                const data = currentDestinatarios[departamento];
+                document.getElementById('correoP rincipal').value = data.principal || '';
+                document.getElementById('correosCopia').value = data.copia ? data.copia.join(', ') : '';
+                document.getElementById('responsable').value = data.responsable || '';
+            } else {
+                document.getElementById('destinatariosForm').reset();
+            }
+        }
+
+        function loadAllData() {
+            // Cargar destinatarios
+            fetch('/api/admin/destinatarios')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        currentDestinatarios = data.destinatarios || {};
+                        updateDestinatariosList();
+                    }
+                })
+                .catch(error => console.error('Error cargando destinatarios:', error));
+
+            // Cargar veedores
+            loadVeedores();
+        }
+
+        function updateDestinatariosList() {
+            const list = document.getElementById('destinatariosList');
+            list.innerHTML = '';
+            
+            Object.keys(currentDestinatarios).forEach(dept => {
+                const data = currentDestinatarios[dept];
+                const card = document.createElement('div');
+                card.className = 'destinatario-card';
+                card.innerHTML = `
+                    <div class="destinatario-header">
+                        <div class="destinatario-name">${dept}</div>
+                        <button class="btn btn-danger" onclick="eliminarDestinatarioDept('${dept}')">Eliminar</button>
+                    </div>
+                    <p><strong>Principal:</strong> ${data.principal || 'No configurado'}</p>
+                    <p><strong>Copia:</strong> ${data.copia ? data.copia.join(', ') : 'No configurado'}</p>
+                    <p><strong>Responsable:</strong> ${data.responsable || 'No configurado'}</p>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function loadVeedores() {
+            fetch('/api/admin/veedores')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        currentVeedores = data.veedores || [];
+                        updateVeedoresTable();
+                    }
+                })
+                .catch(error => console.error('Error cargando veedores:', error));
+        }
+
+        function updateVeedoresTable() {
+            const tbody = document.getElementById('veedoresTable');
+            tbody.innerHTML = '';
+            
+            currentVeedores.forEach((veedor, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${veedor.departamento}</td>
+                    <td>${veedor.nombre}</td>
+                    <td>${veedor.correo}</td>
+                    <td>${veedor.telefono || '-'}</td>
+                    <td>${veedor.cargo || '-'}</td>
+                    <td>
+                        <button class="btn" onclick="editarVeedor(${index})">Editar</button>
+                        <button class="btn btn-danger" onclick="eliminarVeedor(${index})">Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+
+        // Formulario de destinatarios
+        document.getElementById('destinatariosForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const departamento = document.getElementById('departamentoSelect').value;
+            if (!departamento) {
+                showMessage('Seleccione un departamento', 'error');
+                return;
+            }
+            
+            const formData = new FormData(this);
+            const data = {
+                departamento: departamento,
+                principal: formData.get('principal'),
+                copia: formData.get('copia').split(',').map(email => email.trim()).filter(email => email),
+                responsable: formData.get('responsable')
+            };
+            
+            try {
+                const response = await fetch('/api/admin/destinatarios', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showMessage('Destinatarios guardados exitosamente', 'success');
+                    currentDestinatarios[departamento] = {
+                        principal: data.principal,
+                        copia: data.copia,
+                        responsable: data.responsable
+                    };
+                    updateDestinatariosList();
+                } else {
+                    showMessage(result.error || 'Error al guardar', 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión', 'error');
+            }
+        });
+
+        // Formulario de veedores
+        document.getElementById('veedorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                departamento: formData.get('departamento'),
+                nombre: formData.get('nombre'),
+                cedula: formData.get('cedula'),
+                correo: formData.get('correo'),
+                telefono: formData.get('telefono'),
+                cargo: formData.get('cargo')
+            };
+            
+            try {
+                const response = await fetch('/api/admin/veedores', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showMessage('Veedor guardado exitosamente', 'success');
+                    loadVeedores();
+                    this.reset();
+                } else {
+                    showMessage(result.error || 'Error al guardar', 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión', 'error');
+            }
+        });
+
+        function eliminarDestinatarios() {
+            const departamento = document.getElementById('departamentoSelect').value;
+            if (!departamento) return;
+            
+            if (confirm(`¿Está seguro de eliminar la configuración de ${departamento}?`)) {
+                fetch(`/api/admin/destinatarios/${departamento}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            showMessage('Configuración eliminada', 'success');
+                            delete currentDestinatarios[departamento];
+                            updateDestinatariosList();
+                            document.getElementById('destinatariosForm').reset();
+                        }
+                    });
+            }
+        }
+
+        function eliminarDestinatarioDept(departamento) {
+            if (confirm(`¿Está seguro de eliminar la configuración de ${departamento}?`)) {
+                fetch(`/api/admin/destinatarios/${departamento}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            showMessage('Configuración eliminada', 'success');
+                            delete currentDestinatarios[departamento];
+                            updateDestinatariosList();
+                        }
+                    });
+            }
+        }
+
+        function editarVeedor(index) {
+            const veedor = currentVeedores[index];
+            document.getElementById('veedorDepartamento').value = veedor.departamento;
+            document.getElementById('veedorNombre').value = veedor.nombre;
+            document.getElementById('veedorCedula').value = veedor.cedula;
+            document.getElementById('veedorCorreo').value = veedor.correo;
+            document.getElementById('veedorTelefono').value = veedor.telefono || '';
+            document.getElementById('veedorCargo').value = veedor.cargo || '';
+        }
+
+        function eliminarVeedor(index) {
+            const veedor = currentVeedores[index];
+            if (confirm(`¿Está seguro de eliminar a ${veedor.nombre}?`)) {
+                fetch(`/api/admin/veedores/${veedor.cedula}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            showMessage('Veedor eliminado', 'success');
+                            loadVeedores();
+                        }
+                    });
+            }
+        }
+
+        function limpiarFormularioVeedor() {
+            document.getElementById('veedorForm').reset();
+        }
+    </script>
+</body>
+</html>

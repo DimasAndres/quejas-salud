@@ -193,11 +193,12 @@ function configurarTransporter() {
     );
 }
 
-function obtenerDestinatarios(departamento) {
-    return DESTINATARIOS_POR_DEPARTAMENTO[departamento] || null;
+function obtenerDestinatarios(departamento, destinatariosConfig = {}) {
+    // Usar configuración dinámica si está disponible, sino usar la estática
+    return destinatariosConfig[departamento] || DESTINATARIOS_POR_DEPARTAMENTO[departamento] || null;
 }
 
-async function enviarNotificacionQueja(quejaData, usuario) {
+async function enviarNotificacionQueja(quejaData, usuario, destinatariosConfig = {}) {
     configurarTransporter();
 
     const {
@@ -212,8 +213,8 @@ async function enviarNotificacionQueja(quejaData, usuario) {
     } = quejaData;
     const { nombre, apellido, cedula, celular, correo } = usuario;
 
-    // Obtener destinatarios según el departamento
-    const infoDestinatarios = obtenerDestinatarios(departamento);
+    // Obtener destinatarios según el departamento (dinámico o estático)
+    const infoDestinatarios = obtenerDestinatarios(departamento, destinatariosConfig);
     if (!infoDestinatarios) {
         throw new Error(
             `No se ha configurado un correo destinatario para el departamento '${departamento}'.`,
