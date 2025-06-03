@@ -281,6 +281,73 @@
         #quejasTable tr:hover {
             background: #f8f9fa;
         }
+
+        /* Estilos para tipos de quejas */
+        .tipo-categoria {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tipo-categoria h4 {
+            margin-top: 0;
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .tipos-list {
+            margin: 15px 0;
+        }
+
+        .tipo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+
+        .tipo-item:hover {
+            background: #e9ecef;
+        }
+
+        .tipo-texto {
+            flex-grow: 1;
+            padding-right: 10px;
+        }
+
+        .add-tipo {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .add-tipo input {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-small:hover {
+            background: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -294,6 +361,7 @@
             <div class="nav-buttons">
                 <button class="nav-btn active" onclick="showSection('destinatarios')">Gestionar Destinatarios</button>
                 <button class="nav-btn" onclick="showSection('veedores')">Gestionar Veedores</button>
+                <button class="nav-btn" onclick="showSection('tipos-quejas')">Tipos de Quejas</button>
                 <button class="nav-btn" onclick="showSection('estadisticas')">Estadísticas de Quejas</button>
                 <button class="nav-btn" onclick="showSection('configuracion')">Configuración General</button>
                 <button class="nav-btn" onclick="window.location.href='/'">Volver al Sistema</button>
@@ -388,6 +456,45 @@
                     <tbody id="veedoresTable">
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Sección Tipos de Quejas -->
+            <div id="tipos-quejas" class="section">
+                <h3>Gestión de Tipos de Quejas</h3>
+                <p>Administra los tipos de problemas disponibles para cada categoría de atención.</p>
+
+                <div class="tipo-categoria">
+                    <h4>Atención Primaria</h4>
+                    <div class="tipos-list" id="tiposPrimaria">
+                        <!-- Se llenará con JavaScript -->
+                    </div>
+                    <div class="add-tipo">
+                        <input type="text" id="nuevoPrimaria" placeholder="Nuevo tipo de problema primario">
+                        <button class="btn" onclick="agregarTipo('primaria')">Agregar</button>
+                    </div>
+                </div>
+
+                <div class="tipo-categoria">
+                    <h4>Atención Complementaria</h4>
+                    <div class="tipos-list" id="tiposComplementaria">
+                        <!-- Se llenará con JavaScript -->
+                    </div>
+                    <div class="add-tipo">
+                        <input type="text" id="nuevoComplementaria" placeholder="Nuevo tipo de problema complementario">
+                        <button class="btn" onclick="agregarTipo('complementaria')">Agregar</button>
+                    </div>
+                </div>
+
+                <div class="tipo-categoria">
+                    <h4>Medicamentos</h4>
+                    <div class="tipos-list" id="tiposMedicamentos">
+                        <!-- Se llenará con JavaScript -->
+                    </div>
+                    <div class="add-tipo">
+                        <input type="text" id="nuevoMedicamentos" placeholder="Nuevo tipo de problema de medicamentos">
+                        <button class="btn" onclick="agregarTipo('medicamentos')">Agregar</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Sección Estadísticas -->
@@ -531,6 +638,11 @@
 
         let currentDestinatarios = {};
         let currentVeedores = [];
+        let currentTipos = {
+            primaria: [],
+            complementaria: [],
+            medicamentos: []
+        };
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
@@ -571,6 +683,8 @@
             // Cargar datos específicos de la sección
             if (sectionName === 'estadisticas') {
                 loadEstadisticas();
+            } else if (sectionName === 'tipos-quejas') {
+                loadTiposQuejas();
             }
         }
 
@@ -1012,6 +1126,93 @@
                 `;
                 tbody.appendChild(row);
             });
+        }
+
+        // Funciones para tipos de quejas
+        async function loadTiposQuejas() {
+            try {
+                const response = await fetch('/api/admin/tipos-quejas');
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentTipos = data.tipos;
+                    updateTiposDisplay();
+                }
+            } catch (error) {
+                console.error('Error cargando tipos de quejas:', error);
+            }
+        }
+
+        function updateTiposDisplay() {
+            ['primaria', 'complementaria', 'medicamentos'].forEach(categoria => {
+                const container = document.getElementById(`tipos${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`);
+                container.innerHTML = '';
+                
+                currentTipos[categoria].forEach((tipo, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'tipo-item';
+                    item.innerHTML = `
+                        <div class="tipo-texto">${tipo}</div>
+                        <button class="btn-small" onclick="eliminarTipo('${categoria}', ${index})">Eliminar</button>
+                    `;
+                    container.appendChild(item);
+                });
+            });
+        }
+
+        async function agregarTipo(categoria) {
+            const inputId = `nuevo${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`;
+            const input = document.getElementById(inputId);
+            const nuevoTipo = input.value.trim();
+            
+            if (!nuevoTipo) {
+                showMessage('Ingrese un tipo de problema', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/tipos-quejas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ categoria, tipo: nuevoTipo })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showMessage('Tipo agregado exitosamente', 'success');
+                    input.value = '';
+                    loadTiposQuejas();
+                } else {
+                    showMessage(result.error || 'Error al agregar tipo', 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión', 'error');
+            }
+        }
+
+        async function eliminarTipo(categoria, index) {
+            const tipo = currentTipos[categoria][index];
+            if (!confirm(`¿Está seguro de eliminar "${tipo}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/tipos-quejas', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ categoria, index })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showMessage('Tipo eliminado exitosamente', 'success');
+                    loadTiposQuejas();
+                } else {
+                    showMessage(result.error || 'Error al eliminar tipo', 'error');
+                }
+            } catch (error) {
+                showMessage('Error de conexión', 'error');
+            }
         }
     </script>
 </body>

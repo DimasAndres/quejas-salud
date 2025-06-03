@@ -40,6 +40,32 @@ let peticionesRecientes = new Set();
 
 // Almacenamiento para administración
 let destinatariosConfig = {};
+let tiposQuejasData = {
+  primaria: [
+    "Consulta médica general",
+    "Odontología básica", 
+    "Vacunación",
+    "Urgencias menores",
+    "Medicina preventiva",
+    "Control de embarazo"
+  ],
+  complementaria: [
+    "Consulta con especialista",
+    "Cirugía programada",
+    "Hospitalización",
+    "Exámenes diagnósticos",
+    "Terapias (Fisioterapia, psicología)",
+    "Urgencias especializadas"
+  ],
+  medicamentos: [
+    "Falta de medicamentos en farmacia",
+    "Demora en entrega de medicamentos",
+    "Medicamentos vencidos o en mal estado",
+    "Negación de medicamentos autorizados",
+    "Calidad deficiente de medicamentos",
+    "Problemas con medicamentos especializados"
+  ]
+};
 let veedoresData = [
   {
     nombre: "Dr. Juan Carlos Pérez",
