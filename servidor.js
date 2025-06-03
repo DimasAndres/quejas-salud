@@ -422,7 +422,7 @@ const server = http.createServer(async (req, res) => {
       
       // Enviar correos automáticamente
       try {
-        const resultadosCorreo = await enviarNotificacionQueja(nuevaQueja, usuario);
+        const resultadosCorreo = await enviarNotificacionQueja(nuevaQueja, usuario, destinatariosConfig);
         
         let mensajeCompleto = '';
         if (resultadosCorreo.destinatariosEnviado) {
