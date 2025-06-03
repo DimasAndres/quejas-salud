@@ -580,11 +580,11 @@ const server = http.createServer(async (req, res) => {
     const clasificacion = pathname.split('/')[3];
     let tipos = [];
     if (clasificacion === 'primaria') {
-      tipos = TIPOS_PRIMARIA;
+      tipos = tiposQuejasData.primaria;
     } else if (clasificacion === 'complementaria') {
-      tipos = TIPOS_COMPLEMENTARIA;
+      tipos = tiposQuejasData.complementaria;
     } else if (clasificacion === 'medicamentos') {
-      tipos = TIPOS_MEDICAMENTOS;
+      tipos = tiposQuejasData.medicamentos;
     }
     sendJSON(res, 200, tipos);
     return;
@@ -748,6 +748,58 @@ const server = http.createServer(async (req, res) => {
     } catch (error) {
       console.error('Error generando estadísticas:', error);
       sendJSON(res, 500, { success: false, error: 'Error al generar estadísticas' });
+    }
+    return;
+  }
+
+  // API Administrativa - Tipos de Quejas
+  if (pathname === '/api/admin/tipos-quejas' && method === 'GET') {
+    sendJSON(res, 200, { success: true, tipos: tiposQuejasData });
+    return;
+  }
+
+  if (pathname === '/api/admin/tipos-quejas' && method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      const { categoria, tipo } = body;
+      
+      if (!tiposQuejasData[categoria]) {
+        sendJSON(res, 400, { success: false, error: 'Categoría inválida' });
+        return;
+      }
+      
+      if (tiposQuejasData[categoria].includes(tipo)) {
+        sendJSON(res, 400, { success: false, error: 'El tipo ya existe' });
+        return;
+      }
+      
+      tiposQuejasData[categoria].push(tipo);
+      sendJSON(res, 200, { success: true, mensaje: 'Tipo agregado exitosamente' });
+    } catch (error) {
+      sendJSON(res, 500, { success: false, error: 'Error al agregar tipo' });
+    }
+    return;
+  }
+
+  if (pathname === '/api/admin/tipos-quejas' && method === 'DELETE') {
+    try {
+      const body = await parseBody(req);
+      const { categoria, index } = body;
+      
+      if (!tiposQuejasData[categoria]) {
+        sendJSON(res, 400, { success: false, error: 'Categoría inválida' });
+        return;
+      }
+      
+      if (index < 0 || index >= tiposQuejasData[categoria].length) {
+        sendJSON(res, 400, { success: false, error: 'Índice inválido' });
+        return;
+      }
+      
+      tiposQuejasData[categoria].splice(index, 1);
+      sendJSON(res, 200, { success: true, mensaje: 'Tipo eliminado exitosamente' });
+    } catch (error) {
+      sendJSON(res, 500, { success: false, error: 'Error al eliminar tipo' });
     }
     return;
   }
