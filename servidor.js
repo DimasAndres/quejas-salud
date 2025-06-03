@@ -645,6 +645,77 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // API de estadísticas
+  if (pathname === '/api/admin/estadisticas' && method === 'GET') {
+    try {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      
+      // Calcular estadísticas básicas
+      const totalQuejas = quejas.length;
+      const quejasMes = quejas.filter(q => new Date(q.fecha) >= startOfMonth).length;
+      const promedioDiario = totalQuejas > 0 ? totalQuejas / Math.max(1, Math.ceil((now - new Date(Math.min(...quejas.map(q => new Date(q.fecha))))) / (1000 * 60 * 60 * 24))) : 0;
+      const totalUsuarios = users.length;
+      
+      // Estadísticas por departamento
+      const porDepartamento = {};
+      quejas.forEach(q => {
+        porDepartamento[q.departamento] = (porDepartamento[q.departamento] || 0) + 1;
+      });
+      
+      // Estadísticas por tipo de atención
+      const porTipo = {};
+      quejas.forEach(q => {
+        porTipo[q.clasificacion] = (porTipo[q.clasificacion] || 0) + 1;
+      });
+      
+      // Tendencia de los últimos 30 días
+      const tendencia = {};
+      for (let i = 29; i >= 0; i--) {
+        const fecha = new Date(now);
+        fecha.setDate(fecha.getDate() - i);
+        const fechaStr = fecha.toISOString().split('T')[0];
+        
+        const quejasDelDia = quejas.filter(q => {
+          const quejaFecha = new Date(q.fecha).toISOString().split('T')[0];
+          return quejaFecha === fechaStr;
+        }).length;
+        
+        tendencia[fechaStr] = quejasDelDia;
+      }
+      
+      // Quejas recientes (últimas 20)
+      const quejasRecientes = quejas
+        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+        .slice(0, 20)
+        .map(q => ({
+          fecha: q.fecha,
+          departamento: q.departamento,
+          ciudad: q.ciudad,
+          clasificacion: q.clasificacion,
+          problema: q.problema,
+          usuario: `${q.usuario.nombre} ${q.usuario.apellido}`
+        }));
+      
+      const estadisticas = {
+        totalQuejas,
+        quejasMes,
+        promedioDiario,
+        totalUsuarios,
+        porDepartamento,
+        porTipo,
+        tendencia,
+        quejasRecientes
+      };
+      
+      sendJSON(res, 200, { success: true, estadisticas });
+    } catch (error) {
+      console.error('Error generando estadísticas:', error);
+      sendJSON(res, 500, { success: false, error: 'Error al generar estadísticas' });
+    }
+    return;
+  }
+
   // Servir archivos estáticos
   if (pathname === '/' || pathname === '/index.html') {
     serveFile(res, 'index.html');
