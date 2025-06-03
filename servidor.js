@@ -654,7 +654,17 @@ const server = http.createServer(async (req, res) => {
       // Calcular estadísticas básicas
       const totalQuejas = quejas.length;
       const quejasMes = quejas.filter(q => new Date(q.fecha) >= startOfMonth).length;
-      const promedioDiario = totalQuejas > 0 ? totalQuejas / Math.max(1, Math.ceil((now - new Date(Math.min(...quejas.map(q => new Date(q.fecha))))) / (1000 * 60 * 60 * 24))) : 0;
+      
+      let promedioDiario = 0;
+      if (totalQuejas > 0 && quejas.length > 0) {
+        const fechas = quejas.map(q => new Date(q.fecha)).filter(fecha => !isNaN(fecha.getTime()));
+        if (fechas.length > 0) {
+          const primeraFecha = new Date(Math.min(...fechas));
+          const diasTranscurridos = Math.max(1, Math.ceil((now - primeraFecha) / (1000 * 60 * 60 * 24)));
+          promedioDiario = totalQuejas / diasTranscurridos;
+        }
+      }
+      
       const totalUsuarios = users.length;
       
       // Estadísticas por departamento
