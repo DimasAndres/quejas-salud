@@ -66,54 +66,54 @@ let veedoresData = [
     nombre: "Dimas Andrés Arias Núñez",
     cargo: "Veedor",
     departamento: "Quindío",
-    teléfono: "314 6761550",
+    telefono: "314 6761550",
     correo: "docenteandres@gmail.com",
   },
   {
     nombre: "Federman Enrique Moreno De La Cruz",
     cargo: "Veedor",
     departamento: "Guajira",
-    teléfono: "313 5872132",
+    telefono: "313 5872132",
     correo: "fmoreno@uniguajira.edu.co",
   },
   {
     nombre: "Luisa Pinzón Varilla",
     departamento: "Bogotá",
-    teléfono: "301 2738694",
+    telefono: "301 2738694",
   },
   {
     nombre: "Jorge Eliecer Acosta",
     departamento: "Tolima",
-    teléfono: "302 4191546",
+    telefono: "302 4191546",
   },
   {
     nombre: "Yolanda Castro Quintero",
     departamento: "Valle del Cauca",
-    teléfono: "315 5494644",
+    telefono: "315 5494644",
     correo: "d.ine.yolanda.castro@cali.edu.co",
   },
   {
     nombre: "Diana Carolina Coy Castiblanco",
     departamento: "Boyacá",
-    teléfono: "320 2961717",
+    telefono: "320 2961717",
     correo: "coy.diana@gmail.com",
   },
   {
     nombre: "Dexy Jackeline Benavides Nieto",
     departamento: "Nariño",
-    teléfono: "320 3840032",
+    telefono: "320 3840032",
     correo: "jackelinebenavides344@gmail.com",
   },
   {
     nombre: "José Gregorio Cárdenas Peña",
     departamento: "Risaralda",
-    teléfono: "321 2452325",
+    telefono: "321 2452325",
     correo: "josegcardenasp@gmail.com",
   },
   {
     nombre: "Manuel Andrés Viloria Rivera",
     departamento: "Cordoba",
-    teléfono: "310 5388419",
+    telefono: "310 5388419",
     correo: "mviloria2816@gmail.com",
   },
 ];
@@ -872,81 +872,6 @@ const server = http.createServer(async (req, res) => {
       });
     } catch (error) {
       sendJSON(res, 500, { success: false, error: "Error al eliminar tipo" });
-    }
-    return;
-  }
-
-  // API para eliminar todos los veedores
-  if (pathname === '/api/admin/veedores-all' && method === 'DELETE') {
-    try {
-      veedoresData = [];
-      sendJSON(res, 200, { success: true, mensaje: 'Todos los veedores eliminados' });
-    } catch (error) {
-      sendJSON(res, 500, { success: false, error: 'Error al eliminar veedores' });
-    }
-    return;
-  }
-
-  // API para eliminar veedor individual por índice
-  if (pathname.startsWith('/api/admin/veedores/') && method === 'DELETE') {
-    try {
-      const index = parseInt(pathname.split('/')[4]);
-      if (index >= 0 && index < veedoresData.length) {
-        veedoresData.splice(index, 1);
-        sendJSON(res, 200, { success: true, mensaje: 'Veedor eliminado' });
-      } else {
-        sendJSON(res, 400, { success: false, error: 'Índice inválido' });
-      }
-    } catch (error) {
-      sendJSON(res, 500, { success: false, error: 'Error al eliminar veedor' });
-    }
-    return;
-  }
-
-  // API para eliminar todos los destinatarios
-  if (pathname === '/api/admin/destinatarios-all' && method === 'DELETE') {
-    try {
-      Object.keys(destinatariosConfig).forEach(key => {
-        delete destinatariosConfig[key];
-      });
-      sendJSON(res, 200, { success: true, mensaje: 'Todas las configuraciones eliminadas' });
-    } catch (error) {
-      sendJSON(res, 500, { success: false, error: 'Error al eliminar configuraciones' });
-    }
-    return;
-  }
-
-  // API para restablecer tipos de quejas a valores por defecto
-  if (pathname === '/api/admin/tipos-quejas-all' && method === 'DELETE') {
-    try {
-      // Restaurar valores por defecto
-      tiposQuejasData.primaria = [
-        "Consulta médica general",
-        "Odontología básica",
-        "Vacunación",
-        "Medicina preventiva",
-        "Urgencias básicas",
-        "Laboratorio básico"
-      ];
-      tiposQuejasData.complementaria = [
-        "Especialistas médicos",
-        "Cirugías",
-        "Hospitalización",
-        "Exámenes especializados",
-        "Terapias",
-        "Rehabilitación"
-      ];
-      tiposQuejasData.medicamentos = [
-        "Falta de medicamentos",
-        "Demora en entrega",
-        "Calidad deficiente",
-        "Medicamentos vencidos",
-        "Dosificación incorrecta",
-        "Medicamentos no autorizados"
-      ];
-      sendJSON(res, 200, { success: true, mensaje: 'Tipos de quejas restablecidos' });
-    } catch (error) {
-      sendJSON(res, 500, { success: false, error: 'Error al restablecer tipos' });
     }
     return;
   }
