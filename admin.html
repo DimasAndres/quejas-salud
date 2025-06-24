@@ -400,6 +400,7 @@
                         </div>
                         <button type="submit" class="btn">Guardar Destinatarios</button>
                         <button type="button" class="btn btn-danger" onclick="eliminarDestinatarios()">Eliminar Configuración</button>
+                        <button type="button" class="btn btn-danger" onclick="eliminarTodosDestinatarios()">Eliminar Todos los Destinatarios</button>
                     </form>
                 </div>
 
@@ -440,6 +441,7 @@
                     </div>
                     <button type="submit" class="btn">Agregar/Actualizar Veedor</button>
                     <button type="button" class="btn btn-danger" onclick="limpiarFormularioVeedor()">Limpiar</button>
+                    <button type="button" class="btn btn-danger" onclick="eliminarTodosVeedores()">Eliminar Todos los Veedores</button>
                 </form>
 
                 <table class="table">
@@ -494,6 +496,10 @@
                         <input type="text" id="nuevoMedicamentos" placeholder="Nuevo tipo de problema de medicamentos">
                         <button class="btn" onclick="agregarTipo('medicamentos')">Agregar</button>
                     </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="button" class="btn btn-danger" onclick="eliminarTodosTipos()">Restablecer Todos los Tipos</button>
                 </div>
             </div>
 
@@ -897,6 +903,52 @@
             }
         }
 
+        function eliminarTodosVeedores() {
+            if (confirm('¿Está seguro de eliminar TODOS los veedores? Esta acción no se puede deshacer.')) {
+                fetch('/api/admin/veedores-all', { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            showMessage('Todos los veedores eliminados', 'success');
+                            loadVeedores();
+                        } else {
+                            showMessage(result.error || 'Error al eliminar', 'error');
+                        }
+                    });
+            }
+        }
+
+        function eliminarTodosDestinatarios() {
+            if (confirm('¿Está seguro de eliminar TODAS las configuraciones de destinatarios? Esta acción no se puede deshacer.')) {
+                fetch('/api/admin/destinatarios-all', { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            showMessage('Todas las configuraciones eliminadas', 'success');
+                            currentDestinatarios = {};
+                            updateDestinatariosList();
+                        } else {
+                            showMessage(result.error || 'Error al eliminar', 'error');
+                        }
+                    });
+            }
+        }
+
+        function eliminarTodosTipos() {
+            if (confirm('¿Está seguro de eliminar TODOS los tipos de quejas? Se restaurarán los valores por defecto.')) {
+                fetch('/api/admin/tipos-quejas-all', { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            showMessage('Tipos de quejas restablecidos', 'success');
+                            loadTiposQuejas();
+                        } else {
+                            showMessage(result.error || 'Error al restablecer', 'error');
+                        }
+                    });
+            }
+        }
+
         function editarVeedor(index) {
             const veedor = currentVeedores[index];
             document.getElementById('veedorDepartamento').value = veedor.departamento;
@@ -910,12 +962,14 @@
         function eliminarVeedor(index) {
             const veedor = currentVeedores[index];
             if (confirm(`¿Está seguro de eliminar a ${veedor.nombre}?`)) {
-                fetch(`/api/admin/veedores/${veedor.cedula}`, { method: 'DELETE' })
+                fetch(`/api/admin/veedores/${index}`, { method: 'DELETE' })
                     .then(response => response.json())
                     .then(result => {
                         if (result.success) {
                             showMessage('Veedor eliminado', 'success');
                             loadVeedores();
+                        } else {
+                            showMessage(result.error || 'Error al eliminar', 'error');
                         }
                     });
             }

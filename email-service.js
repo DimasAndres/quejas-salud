@@ -4,164 +4,164 @@ const nodemailer = require("nodemailer");
 // Configuración de destinatarios por departamento (basado en destinatarios_departamento.py)
 const DESTINATARIOS_POR_DEPARTAMENTO = {
     Amazonas: {
-        principal: "ingenierodimas@gmail.com",
-        copia: [],
-        responsable: "Secretaría de Salud Amazonas",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Antioquia: {
-        principal: "salud.antioquia@ejemplo.gov.co",
-        copia: ["secretaria.antioquia@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Antioquia",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Atlántico: {
-        principal: "salud.atlantico@ejemplo.gov.co",
-        copia: ["secretaria.atlantico@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Atlántico",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     "Bogotá D.C.": {
-        principal: "salud.bogotadc@ejemplo.gov.co",
-        copia: ["secretaria.bogotadc@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Bogotá D.C.",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Bolívar: {
-        principal: "salud.bolivar@ejemplo.gov.co",
-        copia: ["secretaria.bolivar@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Bolívar",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Boyacá: {
-        principal: "salud.boyaca@ejemplo.gov.co",
-        copia: ["secretaria.boyaca@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Boyacá",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Caldas: {
-        principal: "salud.caldas@ejemplo.gov.co",
-        copia: ["secretaria.caldas@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Caldas",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Caquetá: {
-        principal: "salud.caqueta@ejemplo.gov.co",
-        copia: ["secretaria.caqueta@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Caquetá",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Casanare: {
-        principal: "salud.casanare@ejemplo.gov.co",
-        copia: ["secretaria.casanare@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Casanare",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Cauca: {
-        principal: "salud.cauca@ejemplo.gov.co",
-        copia: ["secretaria.cauca@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Cauca",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Cesar: {
-        principal: "salud.cesar@ejemplo.gov.co",
-        copia: ["secretaria.cesar@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Cesar",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Chocó: {
-        principal: "salud.choco@ejemplo.gov.co",
-        copia: ["secretaria.choco@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Chocó",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Cundinamarca: {
-        principal: "salud.cundinamarca@ejemplo.gov.co",
-        copia: ["secretaria.cundinamarca@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Cundinamarca",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Córdoba: {
-        principal: "salud.cordoba@ejemplo.gov.co",
-        copia: ["secretaria.cordoba@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Córdoba",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Guainía: {
-        principal: "salud.guainia@ejemplo.gov.co",
-        copia: ["secretaria.guainia@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Guainía",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Guaviare: {
-        principal: "salud.guaviare@ejemplo.gov.co",
-        copia: ["secretaria.guaviare@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Guaviare",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Huila: {
-        principal: "salud.huila@ejemplo.gov.co",
-        copia: ["secretaria.huila@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Huila",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     "La Guajira": {
-        principal: "salud.laguajira@ejemplo.gov.co",
-        copia: ["secretaria.laguajira@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud La Guajira",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Magdalena: {
-        principal: "salud.magdalena@ejemplo.gov.co",
-        copia: ["secretaria.magdalena@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Magdalena",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Meta: {
-        principal: "salud.meta@ejemplo.gov.co",
-        copia: ["secretaria.meta@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Meta",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Nariño: {
-        principal: "salud.narino@ejemplo.gov.co",
-        copia: ["secretaria.narino@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Nariño",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     "Norte de Santander": {
-        principal: "salud.nortedesantander@ejemplo.gov.co",
-        copia: ["secretaria.nortedesantander@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Norte de Santander",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Putumayo: {
-        principal: "salud.putumayo@ejemplo.gov.co",
-        copia: ["secretaria.putumayo@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Putumayo",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Quindío: {
-        principal: "salud.quindio@ejemplo.gov.co",
-        copia: ["secretaria.quindio@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Quindío",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Risaralda: {
-        principal: "salud.risaralda@ejemplo.gov.co",
-        copia: ["secretaria.risaralda@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Risaralda",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     "San Andrés y Providencia": {
-        principal: "salud.sanandresyprovidencia@ejemplo.gov.co",
-        copia: ["secretaria.sanandresyprovidencia@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud San Andrés y Providencia",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Santander: {
-        principal: "salud.santander@ejemplo.gov.co",
-        copia: ["secretaria.santander@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Santander",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Sucre: {
-        principal: "salud.sucre@ejemplo.gov.co",
-        copia: ["secretaria.sucre@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Sucre",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Tolima: {
-        principal: "salud.tolima@ejemplo.gov.co",
-        copia: ["secretaria.tolima@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Tolima",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     "Valle del Cauca": {
-        principal: "salud.valledelcauca@ejemplo.gov.co",
-        copia: ["secretaria.valledelcauca@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Valle del Cauca",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Vaupés: {
-        principal: "salud.vaupes@ejemplo.gov.co",
-        copia: ["secretaria.vaupes@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Vaupés",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
     Vichada: {
-        principal: "salud.vichada@ejemplo.gov.co",
-        copia: ["secretaria.vichada@ejemplo.gov.co"],
-        responsable: "Secretaría de Salud Vichada",
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
+        responsable: "",
     },
 };
 
@@ -195,10 +195,18 @@ function configurarTransporter() {
 
 function obtenerDestinatarios(departamento, destinatariosConfig = {}) {
     // Usar configuración dinámica si está disponible, sino usar la estática
-    return destinatariosConfig[departamento] || DESTINATARIOS_POR_DEPARTAMENTO[departamento] || null;
+    return (
+        destinatariosConfig[departamento] ||
+        DESTINATARIOS_POR_DEPARTAMENTO[departamento] ||
+        null
+    );
 }
 
-async function enviarNotificacionQueja(quejaData, usuario, destinatariosConfig = {}) {
+async function enviarNotificacionQueja(
+    quejaData,
+    usuario,
+    destinatariosConfig = {},
+) {
     configurarTransporter();
 
     const {
@@ -214,7 +222,10 @@ async function enviarNotificacionQueja(quejaData, usuario, destinatariosConfig =
     const { nombre, apellido, cedula, celular, correo } = usuario;
 
     // Obtener destinatarios según el departamento (dinámico o estático)
-    const infoDestinatarios = obtenerDestinatarios(departamento, destinatariosConfig);
+    const infoDestinatarios = obtenerDestinatarios(
+        departamento,
+        destinatariosConfig,
+    );
     if (!infoDestinatarios) {
         throw new Error(
             `No se ha configurado un correo destinatario para el departamento '${departamento}'.`,
@@ -258,7 +269,6 @@ Copia enviada a: ${infoDestinatarios.copia.length > 0 ? infoDestinatarios.copia.
 
 ---
 Este correo ha sido generado a través por el sistema de Veeduría Nacional en Salud del Magisterio.
-Número de registro: ${id}
 Fecha: ${new Date().toLocaleString("es-CO")}`;
 
     // Cuerpo del correo para el usuario (comprobante)
@@ -267,7 +277,7 @@ Fecha: ${new Date().toLocaleString("es-CO")}`;
 
 Estimado/a ${nombre} ${apellido},
 
-Le informamos que su queja ha sido registrada y exitosamente en nuestro sistema y ha sido enviada exitosamente a las siguientes entidades responsables de su departamento:
+Le informamos que su queja ha sido registrada en nuestro sistema y ha sido enviada exitosamente a las siguientes entidades nacionales responsables:
 
 DESTINATARIOS DE SU QUEJA:
 • ${responsable}
@@ -275,7 +285,6 @@ DESTINATARIOS DE SU QUEJA:
 ${infoDestinatarios.copia.length > 0 ? infoDestinatarios.copia.map((correo) => `• Correo copia: ${correo}`).join("\n") : ""}
 
 DETALLE DE SU REGISTRO:
-Número de Registro: ${id}
 Fecha: ${new Date().toLocaleString("es-CO")}
 Tipo de Atención: ${clasificacion}
 Tipo de Queja: ${problema}
