@@ -64,27 +64,23 @@ let tiposQuejasData = {
 let veedoresData = [
   {
     nombre: "Dimas Andrés Arias Núñez",
-    cargo: "Veedor",
     departamento: "Quindío",
     telefono: "314 6761550",
     correo: "docenteandres@gmail.com",
   },
   {
     nombre: "Federman Enrique Moreno De La Cruz",
-    cargo: "Veedor",
     departamento: "Guajira",
     telefono: "313 5872132",
     correo: "fmoreno@uniguajira.edu.co",
   },
   {
     nombre: "Luisa Pinzón Varilla",
-    cargo: "Veedor",
     departamento: "Bogotá",
     telefono: "301 2738694",
   },
   {
     nombre: "Jorge Eliecer Acosta",
-    cargo: "veedor",
     departamento: "Tolima",
     telefono: "302 4191546",
   },
