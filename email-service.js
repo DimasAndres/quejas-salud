@@ -4,8 +4,8 @@ const nodemailer = require("nodemailer");
 // Configuración de destinatarios por departamento (basado en destinatarios_departamento.py)
 const DESTINATARIOS_POR_DEPARTAMENTO = {
     Amazonas: {
-        principal: "ingenierodimas@gmail.com",
-        copia: [""],
+        principal: "servicioalcliente@fiduprevisora.com.co",
+        copia: ["correointernosns@supersalud.gov.co"],
         responsable: "",
     },
     Antioquia: {
