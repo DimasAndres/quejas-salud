@@ -78,6 +78,7 @@ let veedoresData = [
   },
   {
     nombre: "Luisa Pinzón Varilla",
+    cargo: "Veedor",
     departamento: "Bogotá",
     telefono: "301 2738694",
   },
