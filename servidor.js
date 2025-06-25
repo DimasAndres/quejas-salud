@@ -84,6 +84,7 @@ let veedoresData = [
   },
   {
     nombre: "Jorge Eliecer Acosta",
+    cargo: "veedor",
     departamento: "Tolima",
     telefono: "302 4191546",
   },
