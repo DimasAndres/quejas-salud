@@ -9,22 +9,22 @@ const DESTINATARIOS_POR_DEPARTAMENTO = {
         responsable: "",
     },
     Antioquia: {
-        principal: "servicioalcliente@fiduprevisora.com.co",
+        principal: "servicioalcliente@fiduprevisora.com.co", "radcomviacorreo@fiduprevisora.com.co",
         copia: ["correointernosns@supersalud.gov.co"],
         responsable: "",
     },
     Atlántico: {
-        principal: "servicioalcliente@fiduprevisora.com.co",
+        principal: "servicioalcliente@fiduprevisora.com.co", "radcomviacorreo@fiduprevisora.com.co",
         copia: ["correointernosns@supersalud.gov.co"],
         responsable: "",
     },
     "Bogotá D.C.": {
-        principal: "servicioalcliente@fiduprevisora.com.co",
+        principal: "servicioalcliente@fiduprevisora.com.co", "radcomviacorreo@fiduprevisora.com.co",
         copia: ["correointernosns@supersalud.gov.co"],
         responsable: "",
     },
     Bolívar: {
-        principal: "servicioalcliente@fiduprevisora.com.co",
+        principal: "servicioalcliente@fiduprevisora.com.co", "radcomviacorreo@fiduprevisora.com.co",
         copia: ["correointernosns@supersalud.gov.co"],
         responsable: "",
     },
